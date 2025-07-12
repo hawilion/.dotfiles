@@ -1,0 +1,34 @@
+# Secrets
+secrets/
+*.gpg
+*.key
+
+# Nix build artifacts
+result
+*.drv
+*.lock
+
+# Git internal files
+/hooks/
+/info/
+/HEAD
+/objects/
+/refs/
+/packed-refs
+/config
+/description
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editor/IDE files
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
