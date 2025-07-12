@@ -29,7 +29,7 @@
       "${modules}/syncthing.nix"
       "${modules}/tasks.nix"  #automates script to backup /etc/nixos
       "${modules}/brscan4.nix"
-      "${modules}/audacity.nix"
+     # "${modules}/audacity.nix"
       "${modules}/simple-scan.nix"
     ];
  

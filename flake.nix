@@ -31,6 +31,7 @@
           ./configuration.nix
           sops-nix.nixosModules.default
           home-manager.nixosModules.home-manager
+          ./home.nix
         ];
       };
 
