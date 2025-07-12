@@ -3,6 +3,15 @@ secrets/
 *.gpg
 *.key
 
+# Ignore unencrypted secrets
+secrets/*.yaml
+secrets/*.json
+secrets/*.txt
+
+# But allow encrypted SOPS files
+!secrets/*.sops.yaml
+!secrets/*.sops.json
+
 # Nix build artifacts
 result
 *.drv
@@ -32,3 +41,4 @@ Thumbs.db
 *.sublime-workspace
 .idea/
 .vscode/
+nixos-config

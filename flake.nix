@@ -1,5 +1,5 @@
 {
-  description = "NixOS Config Flake";
+  description = "My NixOS Flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -9,28 +9,40 @@
   };
 
   outputs = { self, nixpkgs, sops-nix, home-manager }:
-  let
-    system = "x86_64-linux";
-  in
-  {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = [
-        "${self}/modules/default.nix"
-        ./configuration.nix
-        ./modules
-        sops-nix.nixosModules.default
-        home-manager.nixosModules.home-manager
+    let
+      system = "x86_64-linux";
 
-        # Inline module for secrets
-        {
-          security.sops.secrets.secrets-yaml = {
-            source = ./secrets/secrets.yaml;
-            mode = "0600";
+      # 👇 Define modules inside the `let` block
+      modules = {
+        default = ./modules/default.nix;
+        secrets = ./modules/secrets.nix;
+      };
+    in
+    {
+      # 👇 Expose modules (optional)
+      modules = modules;
+
+      # 👇 NixOS configuration
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          modules.default
+          modules.secrets
+          ./configuration.nix
+          sops-nix.nixosModules.default
+          home-manager.nixosModules.home-manager
+        ];
+      };
+
+      # 👇 Optional: Home Manager configurations
+      homeConfigurations = {
+        mike = home-manager.lib.homeConfigurations."${system}" {
+          username = "mike";
+          modules = [
+            ./home/mike
+          ];
         };
-       }
-
-      ];
+      };
     };
-  };
 }
+
