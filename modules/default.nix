@@ -1,6 +1,5 @@
+{config, pkgs, lib, ... }:
 {
-  description = "My Dotfiles";
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
