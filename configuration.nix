@@ -22,7 +22,7 @@
   ./hardware-configuration.nix
 #  ./modules/main-user.nix
   inputs.home-manager.nixosModules.default
-  ./modules/home.nix
+  #./modules/home.nix
   ./modules/syncthing.nix
   ./modules/tasks.nix
   ./modules/brscan4.nix
