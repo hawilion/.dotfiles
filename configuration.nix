@@ -64,7 +64,7 @@ nix.gc = {
       "1.1.1.1"
       "8.8.8.8"
     ];
-    hostId = config.sops.secrets.networking.hostID;
+    hostId = "abcdef01;
     hostName = "nixos";
     domain = "local";
 
