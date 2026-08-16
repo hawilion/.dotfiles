@@ -51,7 +51,6 @@
         enabled = true;
         theme = "dark";
         user = "mike";
-        password = secrets.syncthing_gui_password;
       };
 
       devices = {
