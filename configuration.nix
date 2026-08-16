@@ -5,6 +5,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 {
@@ -17,23 +18,20 @@
   ];
 
   imports =
-    let
-      modules = ./modules;
-    in
     [
-     #Include the results of the hardware scan.
-      ./hardware-configuration.nix
-     # User and app modules   
-      "${modules}/home.nix"
-#      "${modules}/main-user.nix"
-      "${modules}/syncthing.nix"
-      "${modules}/tasks.nix"  #automates script to backup /etc/nixos
-      "${modules}/brscan4.nix"
-     # "${modules}/audacity.nix"
-      "${modules}/simple-scan.nix"
+  ./hardware-configuration.nix
+#  ./modules/main-user.nix
+  inputs.home-manager.nixosModules.default
+  ./modules/home.nix
+  ./modules/syncthing.nix
+  ./modules/tasks.nix
+  ./modules/brscan4.nix
+  ./modules/simple-scan.nix
     ];
  
-
+#main-user.enable= true;
+#main-user.userName= "mike";
+ 
 nix.gc = {
    automatic = true; # Enable automatic garbage collection
    dates = "07:15"; # Run garbage collection daily at 7:15 AM
@@ -205,10 +203,9 @@ nix.gc = {
       "lp"
     ];
   };
-users.groups.sometestservice = {};
   home-manager = {
     #also post inputs to home-manager modules
-    #specialArgs= {inherit inputs; };
+    #extraSpecialArgs = { inherit inputs; };
     users = {
       "mike" = import ./home.nix;
     };
@@ -222,7 +219,7 @@ users.groups.sometestservice = {};
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with inputs.nixpkgs.pkgs; [
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     plocate

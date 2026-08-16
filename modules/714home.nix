@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Required: Set username and home directory
@@ -13,14 +13,13 @@
   };
 
   # Install packages in user profile
-home.packages.inputs.nixpkgs.pkgs = [
-  pkgs.zsh
-  pkgs.git
-  pkgs.brave
-  pkgs.audacity
-  pkgs.localsend
-];
-
+  home.packages = with pkgs; [
+    zsh
+    git
+    brave
+    audacity
+    localsend
+  ];
 
   # Enable and configure Zsh
   programs.zsh = {

@@ -1,49 +1,31 @@
 {
-  description = "My NixOS Flake";
+  description = "Nixos config flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    sops-nix.url = "github:Mic92/sops-nix";
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+     home-manager = {
+       url = "github:nix-community/home-manager";
+       inputs.nixpkgs.follows = "nixpkgs";
+     };
   };
 
-  outputs = { self, nixpkgs, sops-nix, home-manager }:
-    let
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+    # use "nixos", or your hostname as the name of the configuration
+    # it's a better practice than "default" shown in the video
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-
-      # 👇 Define modules inside the `let` block
-      modules = {
-        default = ./modules/default.nix;
-        secrets = ./modules/secrets.nix;
-      };
-    in
-    {
-      # 👇 Expose modules (optional)
-      modules = modules;
-
-      # 👇 NixOS configuration
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          modules.default
-          modules.secrets
-          ./configuration.nix
-          sops-nix.nixosModules.default
-          home-manager.nixosModules.home-manager
-          ./modules/home.nix
-        ];
-      };
-
-      # 👇 Optional: Home Manager configurations
-      homeConfigurations = {
-        mike = home-manager.lib.homeConfigurations."${system}" {
-          username = "mike";
-          modules = [
-            ./home/mike
-          ];
-        };
-      };
+      # Use `specialArgs` instead of `extraSpecialArgs`
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./configuration.nix
+         inputs.home-manager.nixosModules.default
+         {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.mike = import ./home.nix;
+          }
+      ];
     };
+  };
 }
-
