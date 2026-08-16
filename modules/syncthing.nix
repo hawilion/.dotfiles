@@ -1,10 +1,17 @@
 { config, pkgs, lib, ... }:
 
-let
-  secrets = import ../secrets/secrets.yaml;
-in
 
 {
+# Point sops to your secrets file relative to this module
+  sops.defaultSopsFile = ../secrets/secrets.yaml;
+  sops.defaultSopsFormat = "yaml";
+
+  # Declare the secret so sops-nix decrypts it to /run/secrets/
+  sops.secrets."syncthing_gui_password" = {
+    owner = "mike";
+  };
+
+
   # Allow Syncthing ports through the firewall
   networking.firewall.allowedTCPPorts = [ 8384 22000 ];
   networking.firewall.allowedUDPPorts = [ 22000 21027 ];
