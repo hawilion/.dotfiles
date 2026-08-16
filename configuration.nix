@@ -21,8 +21,6 @@
     [
   ./hardware-configuration.nix
 #  ./modules/main-user.nix
-  inputs.home-manager.nixosModules.default
-  #./modules/home.nix
   ./modules/syncthing.nix
   ./modules/tasks.nix
   ./modules/brscan4.nix
@@ -202,13 +200,6 @@ nix.gc = {
       "scanner"
       "lp"
     ];
-  };
-  home-manager = {
-    #also post inputs to home-manager modules
-    #extraSpecialArgs = { inherit inputs; };
-    users = {
-      "mike" = import ./home.nix;
-    };
   };
 
   # Install firefox.
