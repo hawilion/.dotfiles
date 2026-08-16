@@ -23,7 +23,6 @@
 #  ./modules/main-user.nix
   ./modules/syncthing.nix
   ./modules/tasks.nix
-  ./modules/brscan4.nix
   ./modules/simple-scan.nix
     ];
  
@@ -148,7 +147,17 @@ nix.gc = {
     pkgs.brgenml1cupswrapper
   ];
 
-  hardware.sane.enable = true;
+
+  hardware.sane = {
+  enable = true;
+  brscan4 = {
+    enable = true;
+    # If using a network scanner, define it here:
+    # netDevices = {
+    #   office = { model = "ADS-2200"; ip = "192.168.1.100"; };
+    # };
+  };
+};
   #enable teamviewer
   services.teamviewer.enable = true;
   #enable flatpak
