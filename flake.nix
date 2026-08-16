@@ -11,6 +11,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+        sops-nix.nixosModules.sops
       ];
     };
   };
