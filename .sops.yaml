@@ -1,5 +1,9 @@
+# /etc/nixos/.sops.yaml
+keys:
+  - &nixos_server age1v3zhmfjf6sda8pcqss5q83q02lt9megk70zs0pptm28usekykess5uqmuz
+
 creation_rules:
   - path_regex: ^secrets/.*\.(yaml|txt)$
     key_groups:
       - age:
-          - age1ghdjcxqjps98fmcpsm755rt7pd3sh5lagul0tsmyfr546hwq0cuspky7ha 
+          - *nixos_server

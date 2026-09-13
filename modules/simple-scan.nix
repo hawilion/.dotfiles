@@ -9,7 +9,6 @@
 
   # Ensure necessary Python packages are available
   environment.systemPackages = [
-    pkgs.python27Packages.enum  # Example package, adjust based on specific needs
   ];
 
   # Additional configuration might be required based on specific scanner model

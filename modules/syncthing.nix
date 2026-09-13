@@ -7,7 +7,7 @@
   sops.defaultSopsFormat = "yaml";
 
   # Declare the secret so sops-nix decrypts it to /run/secrets/
-  sops.secrets."syncthing_gui_password" = {
+  sops.secrets."syncthing-gui-password" = {
     owner = "mike";
   };
 
