@@ -2,13 +2,17 @@
 
 let
   # Manual run script with libnotify desktop notifications
+  nrfScript = pkgs.writeShellScriptBin "nrf" ''
+  set -euo pipefail
+  sudo nixos-rebuild switch --flake ~/.dotfiles#lenovo
+'';
   borgBackupScript = pkgs.writeShellScriptBin "borg-run" ''
     set -euo pipefail
-
+    export DISPLAY="''${DISPLAY:-:0}"
+    export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/1000/bus}"
     export BORG_PASSPHRASE=$(cat /run/secrets/borg_passphrase)
     # Target path or remote SSH repo location:
-    export BORG_REPO=''${BORG_REPO:-"/var/lib/borgbackup"}
-
+   export BORG_REPO="ssh://nixos-server/var/lib/borg-lenovo"
     echo "Starting Borg backup..."
 
     if ${pkgs.borgbackup}/bin/borg create \
@@ -21,7 +25,7 @@ let
       /home/mike; then
 
       echo "Backup succeeded."
-      ${pkgs.libnotify}/bin/notify-send -u normal "Borg Backup" "Backup completed successfully!"
+      ${pkgs.libnotify}/bin/notify-send -u normal -t 0  "Borg Backup" "Backup completed successfully!"
     else
       echo "Backup failed." >&2
       ${pkgs.libnotify}/bin/notify-send -u critical "Borg Backup" "Backup failed! Check journal logs using 'borg-journal'."
@@ -39,6 +43,7 @@ in
   environment.systemPackages = [
     borgBackupScript
     borgJournalScript
+    nrfScript
   ];
 
   # Automated Systemd Backup Service

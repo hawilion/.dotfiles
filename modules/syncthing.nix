@@ -1,26 +1,19 @@
 { config, pkgs, lib, ... }:
 
-
 {
-# Point sops to your secrets file relative to this module
+  # Point sops to your secrets file relative to this module
   sops.defaultSopsFile = ../secrets/secrets.yaml;
   sops.defaultSopsFormat = "yaml";
 
-  # Declare the secret so sops-nix decrypts it to /run/secrets/
+  # Declare the secret so sops-nix decrypts it
   sops.secrets."syncthing-gui-password" = {
     owner = "mike";
   };
-
-
-  # Allow Syncthing ports through the firewall
-  networking.firewall.allowedTCPPorts = [ 8384 22000 ];
-  networking.firewall.allowedUDPPorts = [ 22000 21027 ];
 
   # Ensure directories exist and have correct permissions
   systemd.tmpfiles.rules = [
     "d /home/mike/.local/state/syncthing 0700 mike users -"
     "d /home/mike/.config/syncthing 0700 mike users -"
-    "d /home/mike/.keys/syncthing-nixos 0700 mike users -"
   ];
 
   # User group configuration
@@ -36,8 +29,6 @@
     openDefaultPorts = true;
     configDir = "/home/mike/.config/syncthing";
     dataDir = "/home/mike/.local/state/syncthing";
-    key = "/home/mike/.keys/syncthing-nixos/key.pem";
-    cert = "/home/mike/.keys/syncthing-nixos/cert.pem";
     overrideDevices = true;
     overrideFolders = true;
 
@@ -45,42 +36,40 @@
       databaseTuning = "small";
       maxFolderConcurrency = 1;
       maxConcurrentIncomingRequestKiB = 32768;
-
+      options = {
+        localAnnounceEnabled = true;
+        localAnnouncePort = 21027;
+        globalAnnounceEnabled = true;
+  };
       gui = {
         address = "0.0.0.0:8384";
         enabled = true;
         theme = "dark";
         user = "mike";
+        passwordFile = config.sops.secrets."syncthing-gui-password".path;
       };
 
       devices = {
-        "nixos" = {
-          id = "APIGR7E-YKYSK7J-4DPDUFN-K74A6KL-W4KBFHL-N26623I-LQMG3ZE-KASQ7QS";
+        "lenovo" = {
+          id = "T4PRAF6-IPACD6V-MYI5HBR-KYLQB4W-OKAEPW3-BL2JZH2-FRHLNUQ-L5VL2QH";
+          addresses = [ "tcp://100.97.213.119:22000" ]; # Replace with lenovo'  Tailscale IP or tailnet hostname
         };
-        "pixel6" = {
-          id = "5O4BIQZ-HVHVNSV-5T2PYVH-7DY4MIL-VJHD7N6-LQEBGGU-MUSSNPL-NKHLOAF";
-        };
-        "nixos-server" = {
-          id = "XEFJCKE-E6PM5UR-C25S7ZZ-YUK2G3C-DPEFCNO-QY7SREW-5O5Z5RJ-L26KSQC";
-        };
+        "pixel10" = {
+          id = "HEBRQRF-QMGQJBZ-SPDHEIU-VIN7DPW-OJFE5KM-JJRQYML-I5JA4GG-5IFXDQM";
+          addresses = [ "tcp://100.72.222.102:22000" ]; # Replace with lenovo'  Tailscale IP or tailnet hostname
+       };
       };
 
       folders = {
         "mlog" = {
           id = "ksov6-obsn7";
           path = "/home/mike/mlog";
-          devices = [
-            "pixel6"
-            "nixos-server"
-          ];
+          devices = [ "lenovo" "pixel10" ];
         };
         "Camera" = {
           id = "nuz3y-otvkt";
           path = "/home/mike/Camera";
-          devices = [
-            "pixel6"
-            "nixos-server"
-          ];
+          devices = [ "lenovo" "pixel10" ];
           ignorePerms = false;
         };
       };
