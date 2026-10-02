@@ -12,17 +12,16 @@
   boot.initrd.kernelModules = [ "i915" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/ad2fab0b-cc63-4527-96a2-a63baf28bb46";
-      fsType = "ext4";
-    };
+ fileSystems."/" = {
+  device = "/dev/disk/by-uuid/26cf4a52-9d42-405b-b073-d6945512cc26";
+  fsType = "ext4";
+};
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/56E2-9507";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
-
+fileSystems."/boot" = {
+  device = "/dev/disk/by-uuid/8282-F292";
+  fsType = "vfat";
+  options = [ "fmask=0022" "dmask=0022" ];
+};
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

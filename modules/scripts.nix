@@ -1,49 +1,19 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Manual run script with libnotify desktop notifications
-  nrfScript = pkgs.writeShellScriptBin "nrf" ''
-  set -euo pipefail
-  sudo nixos-rebuild switch --flake ~/.dotfiles#lenovo
-'';
-  borgBackupScript = pkgs.writeShellScriptBin "borg-run" ''
-    set -euo pipefail
-    export DISPLAY="''${DISPLAY:-:0}"
-    export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/1000/bus}"
-    export BORG_PASSPHRASE=$(cat /run/secrets/borg_passphrase)
-    # Target path or remote SSH repo location:
-   export BORG_REPO="ssh://nixos-server/var/lib/borg-lenovo"
-    echo "Starting Borg backup..."
-
-    if ${pkgs.borgbackup}/bin/borg create \
-      --stats \
-      --compression zstd \
-      --exclude '/home/mike/.cache' \
-      --exclude '/home/mike/.nix-profile' \
-      ::"lenovo-{now:%Y-%m-%d-%H%M%S}" \
-      /home/mike/.dotfiles \
-      /home/mike; then
-
-      echo "Backup succeeded."
-      ${pkgs.libnotify}/bin/notify-send -u normal -t 0  "Borg Backup" "Backup completed successfully!"
-    else
-      echo "Backup failed." >&2
-      ${pkgs.libnotify}/bin/notify-send -u critical "Borg Backup" "Backup failed! Check journal logs using 'borg-journal'."
-      exit 1
-    fi
-  '';
-
-  # Command to immediately view logs if something goes wrong
-  borgJournalScript = pkgs.writeShellScriptBin "borg-journal" ''
-    exec ${pkgs.systemd}/bin/journalctl -u borg-backup-lenovo.service -e -f
-  '';
+  rebuildLenovoScript = pkgs.writeShellScriptBin "rebuild-lenovo" (builtins.readFile ./scripts/rebuild-lenovo.sh);
+  rebuildLlamaScript  = pkgs.writeShellScriptBin "rebuild-llama"  (builtins.readFile ./scripts/rebuild-llama.sh);
+  borgBackupScript    = pkgs.writeShellScriptBin "borg-run"       (builtins.readFile ./scripts/borg-run.sh);
+  borgJournalScript   = pkgs.writeShellScriptBin "borg-journal"   (builtins.readFile ./scripts/borg-journal.sh);
+  ollamaCtlScript     = pkgs.writeShellScriptBin "ollama-ctl"     (builtins.readFile ./scripts/ollama.sh);
 in
 {
-  # Expose manual binaries to your user PATH
   environment.systemPackages = [
     borgBackupScript
     borgJournalScript
-    nrfScript
+    rebuildLenovoScript
+    rebuildLlamaScript
+    ollamaCtlScript
   ];
 
   # Automated Systemd Backup Service

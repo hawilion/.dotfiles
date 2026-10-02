@@ -1,25 +1,29 @@
 { config, pkgs, inputs, ... }:
 
 {
+  assertions = [
+    {
+      assertion = (builtins.getEnv "HOST" == "llama") || (builtins.getEnv "HOSTNAME" == "llama");
+      message = "Error: You are attempting to build the 'llama' profile on a host that is not named 'llama'!";
+    }
+  ];
+
   imports = [
     ./hardware-configuration.nix
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
   ];
-    
+  
   nix.settings.trusted-users = [ "root" "mike" ];
 
-  networking.hostName = "lenovo";
+  networking.hostName = "llama";
   networking.networkmanager.enable = true;
   networking.hosts = {
     "127.0.0.1" = [ "localhost" ];
     "192.168.79.72" = [ "nixos-server" ];
     "192.168.79.99" = [ "lenovo" ];
   };
-
-  # Host-level Tailscale & systemd-resolved (per guardrails)
-  services.tailscale.enable = true;
 
   # SOPS-Nix secrets for llama server
   sops = {
@@ -61,40 +65,22 @@
 
   services.teamviewer.enable = true;
 
-  # ---------------------------------------------------------------------------
-  # Ollama Service (CPU Mode Active; CUDA Staged)
-  # ---------------------------------------------------------------------------
-  services.ollama = {
-    enable = true;
-    host = "0.0.0.0"; # Bind to all network interfaces for lenovo access
-    port = 11434;
-    package = pkgs.ollama; # CPU package during active testing
-    # package = pkgs.ollama-cuda; # Uncomment when RTX 3090 is installed
-  };
-
-  # ---------------------------------------------------------------------------
-  # Open WebUI Interface
-  # ---------------------------------------------------------------------------
   services.open-webui = {
-    enable = true;
-    port = 8080;
-    environment = {
-      HOST = "0.0.0.0";
-      PORT = "8080";
-      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
-      WEBUI_AUTH = "False";
-      ANONYMIZED_TELEMETRY = "False";
-      DO_NOT_TRACK = "True";
-    };
+  enable = true;
+  port = 8080;
+  host = "0.0.0.0";    # If the module supports host, or via environment:
+  environment = {
+    HOST = "0.0.0.0";  # Ensures it binds to all interfaces for network access
+    PORT = "8080";
+    OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
+    WEBUI_AUTH = "False";
   };
+};
 
-  # Firewall rules for WebUI & Ollama API
+  # Open the required ports in the firewall
   networking.firewall.allowedTCPPorts = [ 8080 11434 ];
 
-  # ---------------------------------------------------------------------------
-  # Staged NVIDIA Driver Configuration (Uncomment when GPU arrives)
-  # ---------------------------------------------------------------------------
-  /*
+  # Headless NVIDIA driver configuration for Ollama / local inference
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -105,12 +91,30 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = false;
-    open = false; # Required for Ampere architecture stability
+    open = false;
     nvidiaSettings = true;
   };
-  */
 
-  # User Account & Password Configuration
+  # Ollama AI Service with CUDA acceleration
+   
+  # hosts/llama/default.nix
+services.ollama = {
+  enable = true;
+  package = pkgs.ollama; # Fast CPU binary until 3090 is seated
+  host = "0.0.0.0";
+  port = 11434;
+  environmentVariables = {
+    OLLAMA_HOST = "0.0.0.0:11434";
+    OLLAMA_ORIGINS = "*";
+  };
+};
+systemd.services.ollama.environment = {
+  OLLAMA_HOST = "0.0.0.0:11434";
+  OLLAMA_ORIGINS = "*";
+};
+
+
+  # User Account & Secure Password Hash Configuration
   users.users.mike = {
     isNormalUser = true;
     description = "Mike Lillie";
@@ -133,6 +137,7 @@
     nmap
     syncthing
     go
+    ollama-cuda
   ];
 
   system.stateVersion = "24.11";

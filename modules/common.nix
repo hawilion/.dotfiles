@@ -31,12 +31,19 @@
     openFirewall = true;
     settings.PasswordAuthentication = true;
   };
+
+
+  # Centralized systemd-resolved DNS configuration
   services.resolved = {
-    dnssec = "true";
     enable = true;
-    fallbackDns = [ "8.8.8.8" "2001:4860:4860::8844" ];
-    domains = [ "~." ];
+    settings = {
+      Resolve = {
+        MulticastDNS = "yes";
+        FallbackDNS = "8.8.8.8";
       };
+    };
+  };
+
 
   # Shared Desktop Environment (KDE Plasma 6 + SDDM)
   services.xserver.enable = true;
