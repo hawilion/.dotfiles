@@ -3,7 +3,7 @@
 {
   assertions = [
     {
-      assertion = (builtins.getEnv "HOST" == "llama") || (builtins.getEnv "HOSTNAME" == "llama");
+      assertion = config.networking.hostName == "llama";
       message = "Error: You are attempting to build the 'llama' profile on a host that is not named 'llama'!";
     }
   ];
