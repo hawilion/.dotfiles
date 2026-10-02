@@ -65,7 +65,12 @@
   hardware.bluetooth.enable = true;
   services.flatpak.enable = true;
 
-  environment.systemPackages = with pkgs; [
+  environment.shellAliases = {
+    nrlenovo = "$HOME/.dotfiles/modules/scripts/rebuild-lenovo.sh";
+    nrllama  = "$HOME/.dotfiles/modules/scripts/rebuild-llama.sh";
+  };
+ 
+ environment.systemPackages = with pkgs; [
     neovim
     wget
     git
