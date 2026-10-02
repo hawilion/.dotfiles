@@ -8,6 +8,18 @@
     }
   ];
 
+  security.sudo.extraRules = [
+  {
+    users = [ "mike" ];
+    commands = [
+      {
+        command = "ALL";
+        options = [ "NOPASSWD" ];
+      }
+    ];
+  }
+];
+
   imports = [
     ./hardware-configuration.nix
     ../../modules/common.nix
