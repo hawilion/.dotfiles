@@ -80,14 +80,15 @@
   services.open-webui = {
   enable = true;
   port = 8080;
-  host = "0.0.0.0";    # If the module supports host, or via environment:
+  host = "0.0.0.0";
   environment = {
-    HOST = "0.0.0.0";  # Ensures it binds to all interfaces for network access
-    PORT = "8080";
-    OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
-    WEBUI_AUTH = "False";
+    OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+    WEBUI_URL = "http://192.168.79.86:8080";
+    ENABLE_OLLAMA_API = "True";
   };
 };
+
+networking.firewall.allowedTCPPorts = [ 11434 8080 ];
 
   # Open the required ports in the firewall
   networking.firewall.allowedTCPPorts = [ 11434 8000];
