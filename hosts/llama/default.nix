@@ -90,8 +90,6 @@
 
 networking.firewall.allowedTCPPorts = [ 11434 8080 ];
 
-  # Open the required ports in the firewall
-  networking.firewall.allowedTCPPorts = [ 11434 8000];
 
   # Headless NVIDIA driver configuration for Ollama / local inference
   hardware.graphics = {
