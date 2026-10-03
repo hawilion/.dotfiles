@@ -84,13 +84,13 @@
   environment = {
     HOST = "0.0.0.0";  # Ensures it binds to all interfaces for network access
     PORT = "8080";
-    OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
+    OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
     WEBUI_AUTH = "False";
   };
 };
 
   # Open the required ports in the firewall
-  networking.firewall.allowedTCPPorts = [ 8080 11434 ];
+  networking.firewall.allowedTCPPorts = [ 11434 8000];
 
   # Headless NVIDIA driver configuration for Ollama / local inference
   hardware.graphics = {
