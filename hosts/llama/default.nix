@@ -77,18 +77,20 @@
 
   services.teamviewer.enable = true;
   
-  services.open-webui = {
+services.open-webui = {
   enable = true;
   port = 8080;
   host = "0.0.0.0";
   environment = {
     OLLAMA_BASE_URL = "http://127.0.0.1:11434";
     WEBUI_URL = "http://192.168.79.86:8080";
-    # Prevent startup hangs on sentence-transformers / embedding models
-    ENABLE_RAG_WEB_SEARCH = "False";
+    
+    # Bypass function/tool dependency installation on startup
+    ENABLE_COMMUNITY_SHARING = "False";
+    ENABLE_ADMIN_EXPORT = "False";
+    
+    # Disable automatic embedding/RAG startup checks
     RAG_EMBEDDING_ENGINE = "";
-    # Force direct startup
-    WEBUI_AUTH = "True"; # or "False" if you want to bypass initial admin setup
   };
 };
 
