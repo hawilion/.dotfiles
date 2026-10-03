@@ -115,6 +115,7 @@ services.ollama = {
   package = pkgs.ollama; # Fast CPU binary until 3090 is seated
   host = "0.0.0.0";
   port = 11434;
+  acceleration = "cuda";
   environmentVariables = {
     OLLAMA_HOST = "0.0.0.0:11434";
     OLLAMA_ORIGINS = "*";
