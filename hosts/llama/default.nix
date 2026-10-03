@@ -91,6 +91,8 @@ services.open-webui = {
     
     # Disable automatic embedding/RAG startup checks
     RAG_EMBEDDING_ENGINE = "";
+    VECTOR_DB = "";
+    ENABLE_RAG_HYBRID_SEARCH = "False";
   };
 };
 
