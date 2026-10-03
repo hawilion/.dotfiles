@@ -77,6 +77,7 @@
 
   services.teamviewer.enable = true;
   
+
 services.open-webui = {
   enable = true;
   port = 8080;
@@ -84,20 +85,15 @@ services.open-webui = {
   environment = {
     OLLAMA_BASE_URL = "http://127.0.0.1:11434";
     WEBUI_URL = "http://192.168.79.86:8080";
-    
-    # Bypass function/tool dependency installation on startup
-    ENABLE_COMMUNITY_SHARING = "False";
-    ENABLE_ADMIN_EXPORT = "False";
-    
-    # Disable automatic embedding/RAG startup checks
-    RAG_EMBEDDING_ENGINE = "";
-    VECTOR_DB = "";
+
+    # Turn off embedding model execution while keeping the default vector engine name
+    RAG_EMBEDDING_ENGINE = "none";
+    VECTOR_DB = "chroma";
     ENABLE_RAG_HYBRID_SEARCH = "False";
   };
 };
 
 networking.firewall.allowedTCPPorts = [ 11434 8080 ];
-  
 
 
   # Headless NVIDIA driver configuration for Ollama / local inference
