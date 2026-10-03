@@ -76,6 +76,7 @@
   };
 
   services.teamviewer.enable = true;
+ 
   
 
 services.open-webui = {
@@ -114,21 +115,26 @@ networking.firewall.allowedTCPPorts = [ 11434 8080 ];
   # Ollama AI Service with CUDA acceleration
    
   # hosts/llama/default.nix
-services.ollama = {
+
+services.open-webui = {
   enable = true;
-  package = pkgs.ollama; # Fast CPU binary until 3090 is seated
+  port = 8080;
   host = "0.0.0.0";
-  port = 11434;
- #acceleration = "cuda";
-  environmentVariables = {
-    OLLAMA_HOST = "0.0.0.0:11434";
-    OLLAMA_ORIGINS = "*";
+  environment = {
+    OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+    WEBUI_URL = "http://192.168.79.86:8080";
+
+    # Force Ollama as the embedding engine so PyTorch sentence-transformers is never loaded
+    RAG_EMBEDDING_ENGINE = "ollama";
+    RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+    RAG_EMBEDDING_MODEL = "nomic-embed-text";
+    
+    VECTOR_DB = "chroma";
+    ENABLE_RAG_HYBRID_SEARCH = "False";
   };
 };
-systemd.services.ollama.environment = {
-  OLLAMA_HOST = "0.0.0.0:11434";
-  OLLAMA_ORIGINS = "*";
-};
+
+networking.firewall.allowedTCPPorts = [ 11434 8080 ];
 
 
   # User Account & Secure Password Hash Configuration
