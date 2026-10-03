@@ -76,7 +76,7 @@
   };
 
   services.teamviewer.enable = true;
-
+  
   services.open-webui = {
   enable = true;
   port = 8080;
@@ -84,11 +84,16 @@
   environment = {
     OLLAMA_BASE_URL = "http://127.0.0.1:11434";
     WEBUI_URL = "http://192.168.79.86:8080";
-    ENABLE_OLLAMA_API = "True";
+    # Prevent startup hangs on sentence-transformers / embedding models
+    ENABLE_RAG_WEB_SEARCH = "False";
+    RAG_EMBEDDING_ENGINE = "";
+    # Force direct startup
+    WEBUI_AUTH = "True"; # or "False" if you want to bypass initial admin setup
   };
 };
 
 networking.firewall.allowedTCPPorts = [ 11434 8080 ];
+  
 
 
   # Headless NVIDIA driver configuration for Ollama / local inference
