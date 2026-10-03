@@ -106,11 +106,12 @@ services.open-webui = {
     OLLAMA_BASE_URL = "http://127.0.0.1:11434";
     WEBUI_URL = "http://192.168.79.86:8080";
 
-    # Force Ollama as the embedding engine so PyTorch sentence-transformers is never loaded
+    # Force admin role for your email account
+    WEBUI_ADMIN_EMAIL = "mlillie57@gmail.com";
+
     RAG_EMBEDDING_ENGINE = "ollama";
     RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
     RAG_EMBEDDING_MODEL = "nomic-embed-text";
-    
     VECTOR_DB = "chroma";
     ENABLE_RAG_HYBRID_SEARCH = "False";
   };
