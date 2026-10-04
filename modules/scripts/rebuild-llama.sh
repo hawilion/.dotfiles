@@ -4,7 +4,7 @@ set -e
 DOTFILES_DIR="$HOME/.dotfiles"
 REMOTE_HOST="mike@192.168.79.86"
 REMOTE_DIR="~/.dotfiles"
-NIX_SSHOPTS="-o ControlMaster=auto -o ControlPath=~/.ssh/cm-%r@%h:%p -o ControlPersist=10m" nixos-rebuild switch --use-remote-sudo --flake .#llama
+
 cd "$DOTFILES_DIR"
 
 echo "==> Staging local changes..."
@@ -24,11 +24,12 @@ echo "==> Updating repository on llama..."
 ssh "$REMOTE_HOST" "cd $REMOTE_DIR && git pull origin master"
 
 echo "==> Rebuilding system on llama..."
-sudo nixos-rebuild switch \
+NIX_SSHOPTS="-o ControlMaster=auto -o ControlPath=~/.ssh/cm-%r@%h:%p -o ControlPersist=10m" \
+nixos-rebuild switch \
   --flake .#llama \
   --target-host "$REMOTE_HOST" \
   --build-host "$REMOTE_HOST" \
-  --elevate=sudo \
-  --ask-elevate-password
+  --use-remote-sudo \
+  --no-update-lock-file
 
 echo "==> Deployment to llama complete!"
