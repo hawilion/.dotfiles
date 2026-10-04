@@ -4,7 +4,7 @@ set -e
 DOTFILES_DIR="$HOME/.dotfiles"
 REMOTE_HOST="mike@192.168.79.86"
 REMOTE_DIR="~/.dotfiles"
-
+NIX_SSHOPTS="-o ControlMaster=auto -o ControlPath=~/.ssh/cm-%r@%h:%p -o ControlPersist=10m" nixos-rebuild switch --use-remote-sudo --flake .#llama
 cd "$DOTFILES_DIR"
 
 echo "==> Staging local changes..."
