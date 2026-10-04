@@ -40,7 +40,7 @@
   # Ollama daemon configuration
   services.ollama = {
     enable = true;
-    acceleration = "cuda";
+    package  =  pkgs.ollama-cuda;
     host = "0.0.0.0";
     port = 11434;
     openFirewall = true;
