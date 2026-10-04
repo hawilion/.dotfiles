@@ -54,7 +54,13 @@
   # Shared Audio (PipeWire)
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
-  services.pipewire = {
+  security.sudo = {
+  enable = true;
+  extraConfig = ''
+    Defaults timestamp_timeout=30
+  '';
+}; 
+ services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;

@@ -25,6 +25,7 @@
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
+    ../../modules/ai-client.nix
   ];
   
   nix.settings.trusted-users = [ "root" "mike" ];
@@ -93,32 +94,6 @@
     open = false;
     nvidiaSettings = true;
   };
-
-  # Ollama AI Service with CUDA acceleration
-   
-  # hosts/llama/default.nix
-
-services.open-webui = {
-  enable = true;
-  port = 8080;
-  host = "0.0.0.0";
-  environment = {
-    OLLAMA_BASE_URL = "http://127.0.0.1:11434";
-    WEBUI_URL = "http://192.168.79.86:8080";
-
-    # Force admin role for your email account
-    WEBUI_ADMIN_EMAIL = "mlillie57@gmail.com";
-
-    RAG_EMBEDDING_ENGINE = "ollama";
-    RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
-    RAG_EMBEDDING_MODEL = "nomic-embed-text";
-    VECTOR_DB = "chroma";
-    ENABLE_RAG_HYBRID_SEARCH = "False";
-  };
-};
-
-networking.firewall.allowedTCPPorts = [ 11434 8080 ];
-
 
   # User Account & Secure Password Hash Configuration
   users.users.mike = {
