@@ -9,16 +9,16 @@
   ];
 
   security.sudo.extraRules = [
-  {
-    users = [ "mike" ];
-    commands = [
-      {
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-      }
-    ];
-  }
-];
+    {
+      users = [ "mike" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   imports = [
     ./hardware-configuration.nix
@@ -26,7 +26,7 @@
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
   ];
-  
+    
   nix.settings.trusted-users = [ "root" "mike" ];
 
   networking.hostName = "llama";
@@ -37,12 +37,21 @@
     "192.168.79.99" = [ "lenovo" ];
   };
 
+  # Ollama daemon configuration
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    host = "0.0.0.0";
+    port = 11434;
+    openFirewall = true;
+  };
+
   # SOPS-Nix secrets for llama server
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-    
+     
     secrets."syncthing-gui-password" = { owner = "mike"; };
     secrets."borg_passphrase" = { owner = "mike"; };
   };
@@ -76,8 +85,6 @@
   };
 
   services.teamviewer.enable = true;
- 
-  
 
   # Headless NVIDIA driver configuration for Ollama / local inference
   hardware.graphics = {
@@ -117,7 +124,6 @@
     nmap
     syncthing
     go
-    ollama-cuda
   ];
 
   system.stateVersion = "24.11";
