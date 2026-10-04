@@ -25,7 +25,6 @@
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
-    ../../modules/ai-client.nix
   ];
   
   nix.settings.trusted-users = [ "root" "mike" ];
