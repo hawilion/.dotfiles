@@ -16,7 +16,8 @@ secrets/*.txt
 result
 *.drv
 *.lock
-
+# Allow flake.lock so Nix Flakes remain deterministic across hosts
+!flake.lock
 # Git internal files
 /hooks/
 /info/
