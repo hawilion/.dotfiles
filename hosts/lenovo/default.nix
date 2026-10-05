@@ -12,11 +12,6 @@
 
   networking.hostName = "lenovo";
   networking.networkmanager.enable = true;
-  networking.hosts = {
-    "127.0.0.1" = [ "localhost" ];
-    "192.168.79.72" = [ "nixos-server" ];
-    "192.168.79.99" = [ "lenovo" ];
-  };
 
   # Host-level Tailscale & systemd-resolved
   services.tailscale.enable = true;

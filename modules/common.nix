@@ -2,7 +2,10 @@
 
 {
   time.timeZone = "Pacific/Honolulu";
-  
+  networking.hosts = {
+  "192.168.79.86" = [ "llama" ];
+  "192.168.79.99" = [ "lenovo" ];
+  };    
   i18n = {
     defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
@@ -17,7 +20,12 @@
       LC_TIME = "en_US.UTF-8";
     };
   };
-
+networking.hosts = {
+  "127.0.0.1" = [ "localhost" ];
+  "192.168.79.72" = [ "nixos-server" ];
+  "192.168.79.86" = [ "llama" ];
+  "192.168.79.99" = [ "lenovo" ];
+};
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.gc = {
