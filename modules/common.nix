@@ -2,10 +2,7 @@
 
 {
   time.timeZone = "Pacific/Honolulu";
-  networking.hosts = {
-  "192.168.79.86" = [ "llama" ];
-  "192.168.79.99" = [ "lenovo" ];
-  };    
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
