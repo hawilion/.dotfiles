@@ -69,6 +69,19 @@
       OLLAMA_BASE_URL = "http://127.0.0.1:11434";
       OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
       DATA_DIR = "/var/lib/open-webui/data";
+
+      # RAG & Embedding configuration
+      RAG_EMBEDDING_ENGINE = "ollama";
+      RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+      RAG_EMBEDDING_MODEL = "nomic-embed-text:latest";
+      
+      # Text chunking and splitting for Markdown/Logseq notes
+      ENABLE_RAG_HYBRID_SEARCH = "True";
+      ENABLE_RAG_LOCAL_WEB_FETCH = "True";
+      CHUNK_SIZE = "1000";
+      CHUNK_OVERLAP = "100";
+      # Forces Open WebUI to read environment variables directly on boot
+      ENABLE_PERSISTENT_CONFIG = "False";
     };
   };
 

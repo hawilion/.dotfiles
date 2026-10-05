@@ -18,10 +18,10 @@
     "192.168.79.99" = [ "lenovo" ];
   };
 
-  # Host-level Tailscale & systemd-resolved (per guardrails)
+  # Host-level Tailscale & systemd-resolved
   services.tailscale.enable = true;
 
-  # SOPS-Nix secrets for llama server
+  # SOPS-Nix secrets configuration
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
@@ -44,7 +44,12 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelModules = [ "sg" ];
 
-  # Network Discovery
+  # Printing & Network Discovery
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.brlaser ];
+  };
+
   services.avahi = {
     enable = true;
     publish = {
@@ -61,56 +66,7 @@
 
   services.teamviewer.enable = true;
 
-  # ---------------------------------------------------------------------------
-  # Ollama Service (CPU Mode Active; CUDA Staged)
-  # ---------------------------------------------------------------------------
-  services.ollama = {
-    enable = true;
-    host = "0.0.0.0"; # Bind to all network interfaces for lenovo access
-    port = 11434;
-    package = pkgs.ollama; # CPU package during active testing
-    # package = pkgs.ollama-cuda; # Uncomment when RTX 3090 is installed
-  };
-
-  # ---------------------------------------------------------------------------
-  # Open WebUI Interface
-  # ---------------------------------------------------------------------------
-  services.open-webui = {
-    enable = true;
-    port = 8080;
-    environment = {
-      HOST = "0.0.0.0";
-      PORT = "8080";
-      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
-      WEBUI_AUTH = "False";
-      ANONYMIZED_TELEMETRY = "False";
-      DO_NOT_TRACK = "True";
-    };
-  };
-
-  # Firewall rules for WebUI & Ollama API
-  networking.firewall.allowedTCPPorts = [ 8080 11434 ];
-
-  # ---------------------------------------------------------------------------
-  # Staged NVIDIA Driver Configuration (Uncomment when GPU arrives)
-  # ---------------------------------------------------------------------------
-  /*
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    open = false; # Required for Ampere architecture stability
-    nvidiaSettings = true;
-  };
-  */
-
-  # User Account & Password Configuration
+  # User Account Configuration
   users.users.mike = {
     isNormalUser = true;
     description = "Mike Lillie";

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 DOTFILES_DIR="$HOME/.dotfiles"
-REMOTE_HOST="mike@192.168.79.86"
+REMOTE_HOST="llama"
 REMOTE_DIR="~/.dotfiles"
 
 cd "$DOTFILES_DIR"
@@ -12,7 +12,7 @@ git add -A
 
 if ! git diff-index --quiet HEAD --; then
     echo "==> Committing local changes..."
-    git commit -m "rebuild(llama): update configuration [$(date +'%Y-%m-%d %H:%M:%S')]"
+    git commit -m "rebuild(llama): update configuration $(date +'%Y-%m-%d %H:%M:%S')"
 else
     echo "==> No uncommitted changes."
 fi
@@ -24,7 +24,8 @@ echo "==> Updating repository on llama..."
 ssh "$REMOTE_HOST" "cd $REMOTE_DIR && git pull origin master"
 
 echo "==> Rebuilding system on llama..."
-NIX_SSHOPTS="-o ControlMaster=auto -o ControlPath=~/.ssh/cm-%r@%h:%p -o ControlPersist=10m" \
+export NIX_SSHOPTS="-o ControlMaster=auto -o ControlPath=~/.ssh/master-%r@%h:%p -o ControlPersist=10m"
+
 nixos-rebuild switch \
   --flake .#llama \
   --target-host "$REMOTE_HOST" \
