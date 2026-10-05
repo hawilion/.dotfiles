@@ -31,10 +31,10 @@
 
   # --- 1. NVMe & Nix Store Optimization ---
   nix.settings.auto-optimise-store = true;
-  nix.gc = {
+  nix.gc = lib.mkForce {
     automatic = true;
     dates = "weekly";
-    options = lib.mkForce "--delete-older-than 14d"; # <--- Forces override of common.nix "-d"
+    options = "--delete-older-than 14d";
   };
   services.fstrim.enable = true;
 
