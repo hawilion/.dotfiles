@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, lib, ... }:
 
 {
   assertions = [
@@ -34,7 +34,7 @@
   nix.gc = {
     automatic = true;
     dates = "weekly";
-    options = "--delete-older-than 14d";
+    options = lib.mkForce "--delete-older-than 14d"; # <--- Forces override of common.nix "-d"
   };
   services.fstrim.enable = true;
 
