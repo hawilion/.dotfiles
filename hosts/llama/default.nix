@@ -29,6 +29,15 @@
     
   nix.settings.trusted-users = [ "root" "mike" ];
 
+  # --- 1. NVMe & Nix Store Optimization ---
+  nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+  };
+  services.fstrim.enable = true;
+
   networking.hostName = "llama";
   networking.networkmanager.enable = true;
   networking.hosts = {
@@ -37,15 +46,29 @@
     "192.168.79.99" = [ "lenovo" ];
   };
 
-  # Ollama daemon configuration
+  # --- 2. Ollama Configuration (Keeps CUDA GPU acceleration) ---
   services.ollama = {
     enable = true;
-    package  =  pkgs.ollama-cuda;
+    package = pkgs.ollama-cuda;
     host = "0.0.0.0";
     port = 11434;
     openFirewall = true;
+    models = "/var/lib/ollama/models"; # Standard path on your nvme0n1 root disk
     environmentVariables = {
       OLLAMA_ORIGINS = "*";
+      OLLAMA_KEEP_ALIVE = "10m"; # Drop model from VRAM/RAM after 10m idle
+    };
+  };
+
+  # --- 3. Open WebUI Knowledge Base Interface ---
+  services.open-webui = {
+    enable = true;
+    port = 8080;
+    openFirewall = true;
+    environment = {
+      OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
+      DATA_DIR = "/var/lib/open-webui/data";
     };
   };
 
@@ -54,13 +77,16 @@
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-     
+      
     secrets."syncthing-gui-password" = { owner = "mike"; };
     secrets."borg_passphrase" = { owner = "mike"; };
   };
 
+  # Directory permissions for Open WebUI and Ollama
   systemd.tmpfiles.rules = [
     "f /var/log/sync-script.log 0644 root root - -"
+    "d /var/lib/ollama/models 0770 ollama ollama -"
+    "d /var/lib/open-webui/data 0770 open-webui open-webui -"
   ];
 
   systemd.services.syncthing.environment = {

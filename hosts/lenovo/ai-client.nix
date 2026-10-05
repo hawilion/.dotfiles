@@ -2,30 +2,30 @@
 { config, pkgs, ... }:
 
 {
-  # Local Open WebUI interface on Lenovo workstation
   services.open-webui = {
     enable = true;
     port = 8080;
     environment = {
-      # Target the remote CPU/GPU inference host
+      # Target the remote Ollama host on llama
       OLLAMA_BASE_URL = "http://192.168.79.86:11434";
+      OLLAMA_BASE_URLS = "http://192.168.79.86:11434";
+      ENABLE_OLLAMA_API = "True";
       WEBUI_URL = "http://127.0.0.1:8080";
 
-      # Force local admin permissions
+      DEFAULT_USER_ROLE = "admin";
       WEBUI_ADMIN_EMAIL = "mlillie57@gmail.com";
 
-      # Avoid local HuggingFace/PyTorch hangs by offloading embeddings to Ollama on llama
+      # Explicitly offload or disable local RAG transformers to prevent CPU lockup
       RAG_EMBEDDING_ENGINE = "ollama";
       RAG_OLLAMA_BASE_URL = "http://192.168.79.86:11434";
-      RAG_EMBEDDING_MODEL = "nomic-embed-text";
-      VECTOR_DB = "chroma";
+      RAG_EMBEDDING_MODEL = "nomic-embed-text:latest";
       ENABLE_RAG_HYBRID_SEARCH = "False";
+      ENABLE_RAG_LOCAL_WEB_FETCH = "False";
 
       ANONYMIZED_TELEMETRY = "False";
       DO_NOT_TRACK = "True";
     };
   };
 
-  # Keep local port accessible if navigating from other browser windows
   networking.firewall.allowedTCPPorts = [ 8080 ];
 }
