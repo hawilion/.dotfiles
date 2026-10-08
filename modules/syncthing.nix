@@ -24,6 +24,7 @@
   # Syncthing configuration
   services.syncthing = {
     enable = true;
+    guiAddress = "0.0.0.0:8384";
     group = "users";
     user = "mike";
     openDefaultPorts = true;
