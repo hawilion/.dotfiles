@@ -6,6 +6,8 @@
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
+    ./../modules/borg-backup.nix
+
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
