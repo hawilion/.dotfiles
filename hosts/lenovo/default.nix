@@ -52,7 +52,6 @@
         name = "Brother_MFC_L2710DW";
         deviceUri = "socket://192.168.79.190:9100";
         model = "drv:///brlaser.drv/br2710.ppd";
-        ppdHint = "brlaser";
       }
     ];
     ensureDefaultPrinter = "Brother_MFC_L2710DW";
