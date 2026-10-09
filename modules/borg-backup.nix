@@ -1,7 +1,18 @@
 { config, pkgs, lib, ... }:
 
 let
-  borgBackupScript  = pkgs.writeShellScriptBin "borg-run" (builtins.readFile ./scripts/borg-run.sh);
+  borgBackupScript = pkgs.writeShellApplication {
+    name = "borg-run";
+    runtimeInputs = with pkgs; [
+      borgbackup
+      libnotify
+      iputils    # ping
+      coreutils  # cat, echo, sleep
+      openssh    # ssh transport for borg
+    ];
+    text = builtins.readFile ./scripts/borg-run.sh;
+  };
+
   borgJournalScript = pkgs.writeShellScriptBin "borg-journal" (builtins.readFile ./scripts/borg-journal.sh);
 in
 {
@@ -15,14 +26,6 @@ in
     description = "Automated Borg Backup for Lenovo";
     after = [ "network.target" "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
-    
-    # Provide required binaries to systemd execution path
-    path = with pkgs; [
-      borgbackup
-      libnotify
-      iputils    # ping
-      coreutils  # cat, echo, sleep
-    ];
 
     serviceConfig = {
       Type = "oneshot";
