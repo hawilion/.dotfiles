@@ -2,11 +2,12 @@
 set -euo pipefail
 export DISPLAY="${DISPLAY:-:0}"
 export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/1000/bus}"
-export BORG_PASSPHRASE=$(cat /run/secrets/borg_passphrase)
+BORG_PASSPHRASE=$(cat /run/secrets/borg_passphrase)
+export BORG_PASSPHRASE
 export BORG_REPO="ssh://nixos-server/var/lib/borg-lenovo"
 
 echo "Waiting for nixos-server..."
-for i in {1..6}; do
+for _i in {1..6}; do
   if ping -c 1 -W 5 nixos-server &>/dev/null; then
     break
   fi

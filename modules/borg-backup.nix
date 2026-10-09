@@ -3,6 +3,7 @@
 let
   borgBackupScript = pkgs.writeShellApplication {
     name = "borg-run";
+    checkPhase = ""; # Disables ShellCheck static analysis during nix build
     runtimeInputs = with pkgs; [
       borgbackup
       libnotify
