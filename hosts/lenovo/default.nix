@@ -40,6 +40,8 @@
   boot.kernelModules = [ "sg" ];
 
   # Printing & Network Discovery
+  
+
   services.printing = {
     enable = true;
     drivers = [ pkgs.brlaser ];
@@ -47,12 +49,12 @@
 
   # Declarative Printer Queue via Static Socket
   # Declarative Printer Queue via Static Socket
-hardware.printers = {
+  hardware.printers = {
   ensurePrinters = [
     {
       name = "Brother_MFC_L2710DW";
-      deviceUri = "socket://192.168.79.190:9100";
-      model = "everywhere"; 
+      deviceUri = "ipp://192.168.79.190/ipp/print";
+      model = "everywhere";
     }
   ];
   ensureDefaultPrinter = "Brother_MFC_L2710DW";
