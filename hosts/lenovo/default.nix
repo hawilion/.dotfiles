@@ -6,6 +6,7 @@
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
+    ../../modules/brscan4.nix
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
@@ -45,6 +46,31 @@
     drivers = [ pkgs.brlaser ];
   };
 
+  # Declarative Printer Queue via Static Socket
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Brother_MFC_L2710DW";
+        deviceUri = "socket://192.168.79.190:9100";
+        model = "drv:///brlaser.drv/br2710.ppd";
+        ppdHint = "brlaser";
+      }
+    ];
+    ensureDefaultPrinter = "Brother_MFC_L2710DW";
+  };
+
+  # Scanner Configuration via brscan4 module
+  hardware.sane.enable = true;
+  hardware.sane.brscan4 = {
+    enable = true;
+    netDevices = {
+      MFC_L2710DW = {
+        model = "MFC-L2710DW";
+        ip = "192.168.79.190";
+      };
+    };
+  };
+
   services.avahi = {
     enable = true;
     publish = {
@@ -66,7 +92,7 @@
     isNormalUser = true;
     description = "Mike Lillie";
     home = "/home/mike";
-    extraGroups = [ "networkmanager" "wheel" "adbusers" ];
+    extraGroups = [ "networkmanager" "wheel" "adbusers" "scanner" "lp" ];
     hashedPassword = "$6$akZ5eCOKYl7/EMxe$wwBHra3bZyzFfdcyknWx5hoIvoa/gOnBcdqWJHjvqfTwMTwr2n9KiI.vw55ZBWPwgUSv6j265crG2DeYL00DJ1";
   };
 
@@ -77,7 +103,6 @@
         HostName 192.168.79.72
         User mike
         IdentityFile ~/.ssh/id_ed25519
-    '';
   };
 
   environment.systemPackages = with pkgs; [
