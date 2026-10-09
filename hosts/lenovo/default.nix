@@ -103,6 +103,7 @@
         HostName 192.168.79.72
         User mike
         IdentityFile ~/.ssh/id_ed25519
+    '';
   };
 
   environment.systemPackages = with pkgs; [
