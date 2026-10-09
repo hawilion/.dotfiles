@@ -6,7 +6,6 @@
     ../../modules/common.nix
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
-    ../../modules/brscan4.nix
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
@@ -59,16 +58,10 @@
     ensureDefaultPrinter = "Brother_MFC_L2710DW";
   };
 
-  # Scanner Configuration via brscan4 module
-  hardware.sane.enable = true;
-  hardware.sane.brscan4 = {
+  # Built-in SANE Scanner Configuration
+  hardware.sane = {
     enable = true;
-    netDevices = {
-      MFC_L2710DW = {
-        model = "MFC-L2710DW";
-        ip = "192.168.79.190";
-      };
-    };
+    extraBackends = [ pkgs.brscan4 ];
   };
 
   services.avahi = {
