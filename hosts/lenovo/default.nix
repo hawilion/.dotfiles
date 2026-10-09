@@ -46,16 +46,17 @@
   };
 
   # Declarative Printer Queue via Static Socket
-  hardware.printers = {
-    ensurePrinters = [
-      {
-        name = "Brother_MFC_L2710DW";
-        deviceUri = "socket://192.168.79.190:9100";
-        model = "drv:///brlaser.drv/br2710.ppd";
-      }
-    ];
-    ensureDefaultPrinter = "Brother_MFC_L2710DW";
-  };
+  # Declarative Printer Queue via Static Socket
+hardware.printers = {
+  ensurePrinters = [
+    {
+      name = "Brother_MFC_L2710DW";
+      deviceUri = "socket://192.168.79.190:9100";
+      model = "everywhere"; 
+    }
+  ];
+  ensureDefaultPrinter = "Brother_MFC_L2710DW";
+};
 
   # Built-in SANE Scanner Configuration
   hardware.sane = {
