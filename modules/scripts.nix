@@ -6,6 +6,7 @@ let
   borgBackupScript    = pkgs.writeShellScriptBin "borg-run"       (builtins.readFile ./scripts/borg-run.sh);
   borgJournalScript   = pkgs.writeShellScriptBin "borg-journal"   (builtins.readFile ./scripts/borg-journal.sh);
   ollamaCtlScript     = pkgs.writeShellScriptBin "ollama-ctl"     (builtins.readFile ./scripts/ollama.sh);
+  scanScript          = pkgs.writeShellScriptBin "scan-doc"       (builtins.readFile ./scripts/scan.sh); # <-- Add this
 in
 {
   environment.systemPackages = [
