@@ -15,6 +15,7 @@ in
     rebuildLenovoScript
     rebuildLlamaScript
     ollamaCtlScript
+    scanScript
   ];
 
   # Automated Systemd Backup Service
