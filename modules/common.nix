@@ -106,10 +106,11 @@ netcat
 
   ];
 
-# Ensure non-interactive SSH commands find system binaries
-programs.bash.nonInteractiveShellInit = ''
+# Ensure non-interactive SSH commands find system binaries in standard PATH
+environment.extraInit = ''
   export PATH="/run/current-system/sw/bin:$PATH"
 '';
+
   services.locate = {
     enable = true;
     package = pkgs.plocate;
