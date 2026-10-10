@@ -91,6 +91,7 @@ networking.hosts = {
     plocate
     brave
     ripgrep
+    borgbackup
 dnsutils #neetwork tools
 iputils
 tcpdump
@@ -105,6 +106,10 @@ netcat
 
   ];
 
+# Ensure non-interactive SSH commands find system binaries
+programs.bash.nonInteractiveShellInit = ''
+  export PATH="/run/current-system/sw/bin:$PATH"
+'';
   services.locate = {
     enable = true;
     package = pkgs.plocate;
