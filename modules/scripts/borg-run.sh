@@ -32,7 +32,7 @@ for REPO in "${REPOS[@]}"; do
     sleep 10
   done
 
-  if [[ "$HOST_REACHABLE" != "true" ]]; stream; then
+  if [[ "$HOST_REACHABLE" != "true" ]]; then
     echo "Host $HOST unreachable after retries. Skipping..." >&2
     FAILED_REPOS+=("$HOST (Unreachable)")
     continue
