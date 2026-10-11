@@ -35,6 +35,9 @@ networking.hosts = {
     enable = true;
     openFirewall = true;
     settings.PasswordAuthentication = true;
+    extraConfig = ''
+    SetEnv PATH=/run/current-system/sw/bin:/run/wrappers/bin:$PATH
+  '';
   };
 
 
