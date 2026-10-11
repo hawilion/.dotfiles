@@ -107,6 +107,7 @@
     nmap
     syncthing
     go
+    libreoffice-qt6-fresh
   ];
 
   system.stateVersion = "24.11";
