@@ -84,30 +84,49 @@ networking.hosts = {
     nrllama  = "$HOME/.dotfiles/modules/scripts/rebuild-llama.sh";
   };
  
- environment.systemPackages = with pkgs; [
-    neovim
-    wget
-    git
-    sops
-    age
-    tree
-    plocate
-    brave
-    ripgrep
-    borgbackup
-dnsutils #neetwork tools
-iputils
-tcpdump
-nmap
-curl 
-netcat
-iperf3
-mtr
-openssl
-traceroute
-netcat
+environment.systemPackages = with pkgs; [
+  # Core System & Workstation Utilities
+  neovim
+  wget
+  git
+  sops
+  age
+  tree
+  plocate
+  brave
+  ripgrep
+  borgbackup
+  jq
+  curl
+  htop
 
-  ];
+  # Networking & Diagnostics
+  dnsutils # includes dig, nslookup
+  iputils  # includes ping
+  tcpdump
+  nmap
+  netcat
+  iperf3
+  mtr
+  openssl
+  traceroute
+
+  # File Navigation & Modern CLI Helpers
+  fd
+  fzf
+  eza
+  bat
+  zoxide
+
+  # Monitoring, Disks & Formats
+  btop
+  duf
+  ncdu
+  fastfetch
+  yq-go
+  rsync
+  unzip
+];
 
 # Ensure non-interactive SSH commands find system binaries in standard PATH
 environment.extraInit = ''
