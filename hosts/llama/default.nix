@@ -43,8 +43,9 @@
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ "tailscale0" ]; #
-    allowedUDPPorts = [ 41641 ];          # Default Tailscale port
-  };
+    allowedTCPPorts = [ 8384 22000 ];
+    allowedUDPPorts = [ 21027 22000 ]; 
+ };
   networking.hostName = "llama";
   networking.networkmanager.enable = true;
   networking.hosts = {
