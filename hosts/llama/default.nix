@@ -60,7 +60,7 @@
     host = "0.0.0.0";
     port = 11434;
     openFirewall = true;
-    models = "/var/lib/ollama/models"; # Standard path on your nvme0n1 root disk
+    modelsDir = "/var/lib/ollama/models"; # Standard path on your nvme0n1 root disk
     environmentVariables = {
       OLLAMA_ORIGINS = "*";
       OLLAMA_KEEP_ALIVE = "10m"; # Drop model from VRAM/RAM after 10m idle
