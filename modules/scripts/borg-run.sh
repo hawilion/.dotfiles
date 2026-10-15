@@ -1,3 +1,4 @@
+cat << 'EOF' > modules/scripts/borg-run.sh
 #!/usr/bin/env bash
 set -euo pipefail
 export DISPLAY="${DISPLAY:-:0}"
@@ -65,3 +66,4 @@ else
   notify-send -u critical "Borg Backup" "Backup issues on: $FAILED_LIST. Check journal logs using 'borg-journal'."
   exit 1
 fi
+EOF
