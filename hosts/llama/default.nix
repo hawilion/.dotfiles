@@ -37,7 +37,14 @@
     options = "--delete-older-than 14d";
   };
   services.fstrim.enable = true;
+  services.tailscale.enable = true;
 
+  # Ensure the Tailscale UDP port and trusted interfaces pass through firewall
+  networking.firewall = {
+    enable = true;
+    trustedInterfaces = [ "tailscale0" ]; #
+    allowedUDPPorts = [ 41641 ];          # Default Tailscale port
+  };
   networking.hostName = "llama";
   networking.networkmanager.enable = true;
   networking.hosts = {
