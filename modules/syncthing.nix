@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   # Point sops to your secrets file relative to this module
@@ -14,6 +14,8 @@
   systemd.tmpfiles.rules = [
     "d /home/mike/.local/state/syncthing 0700 mike users -"
     "d /home/mike/.config/syncthing 0700 mike users -"
+    "d /home/mike/mlog 0755 mike users -"
+    "d /home/mike/Camera 0755 mike users -"
   ];
 
   # User group configuration
@@ -37,11 +39,13 @@
       databaseTuning = "small";
       maxFolderConcurrency = 1;
       maxConcurrentIncomingRequestKiB = 32768;
+
       options = {
         localAnnounceEnabled = true;
         localAnnouncePort = 21027;
         globalAnnounceEnabled = true;
-  };
+      };
+
       gui = {
         address = "0.0.0.0:8384";
         enabled = true;
@@ -53,12 +57,18 @@
       devices = {
         "lenovo" = {
           id = "T4PRAF6-IPACD6V-MYI5HBR-KYLQB4W-OKAEPW3-BL2JZH2-FRHLNUQ-L5VL2QH";
-          addresses = [ "tcp://100.97.213.119:22000" ]; # Replace with lenovo'  Tailscale IP or tailnet hostname
+          addresses = [ 
+            "tcp://100.82.102.30:22000"
+            "dynamic"
+          ];
         };
         "pixel10" = {
           id = "HEBRQRF-QMGQJBZ-SPDHEIU-VIN7DPW-OJFE5KM-JJRQYML-I5JA4GG-5IFXDQM";
-          addresses = [ "tcp://100.72.222.102:22000" ]; # Replace with lenovo'  Tailscale IP or tailnet hostname
-       };
+          addresses = [ 
+            "tcp://100.72.222.102:22000"
+            "dynamic"
+          ];
+        };
       };
 
       folders = {
