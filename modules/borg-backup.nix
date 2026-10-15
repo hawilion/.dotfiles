@@ -6,6 +6,7 @@
   environment = {
     BORG_RSH = "ssh -i /etc/ssh/ssh_host_ed25519_key -o IdentitiesOnly=yes -o PreferredAuthentications=publickey";
   };
+ };
   # Systemd Borg Backup service for llama targeting nixos-server
   systemd.services.borg-backup-llama = {
     description = "Automated Borg Backup for Llama State";
