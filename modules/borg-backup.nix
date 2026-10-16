@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Webhook alert helper using curl to ntfy.sh
   sendAlert = ''
     send_alert() {
       local status="$1"
@@ -33,7 +32,6 @@ in
     wants = [ "sops-nix.service" ];
 
     path = with pkgs; [ borgbackup coreutils curl ];
-
     script = ''
       set -euo pipefail
       ${sendAlert}
@@ -58,7 +56,7 @@ in
           --list \
           --keep-daily 7 \
           --keep-weekly 4 \
-          --keep-monthly 6
+          --keep-monthly 6 || true
 
         echo "Local backup succeeded."
         send_alert "info" "SUCCESS: Local backup completed on llama."
@@ -103,7 +101,13 @@ in
       export BORG_REPO="ssh://root@nixos-server/var/lib/borg-llama"
       export BORG_RSH="ssh -i /etc/ssh/ssh_host_ed25519_key -o IdentitiesOnly=yes -o PreferredAuthentications=publickey"
 
-      if ! ping -c 1 -W 5 nixos-server &>/devnull; then
+      # Temporarily disable exit-on-error for network reachability check
+      set +e
+      ping -c 1 -W 5 nixos-server &>/devnull
+      PING_STATUS=$?
+      set -e
+
+      if [ $PING_STATUS -ne 0 ]; then
         echo "nixos-server unreachable. Skipping remote backup." >&2
         send_alert "error" "WARNING: nixos-server unreachable. Remote backup skipped."
         exit 0
@@ -126,7 +130,7 @@ in
           --list \
           --keep-daily 7 \
           --keep-weekly 4 \
-          --keep-monthly 6
+          --keep-monthly 6 || true
 
         echo "Backup to nixos-server succeeded."
         send_alert "info" "SUCCESS: Remote backup to nixos-server completed."
