@@ -14,7 +14,7 @@ let
 
       if ping -c 1 -W 2 lenovo &>/devnull; then
         ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=accept-new -i /etc/ssh/ssh_host_ed25519_key root@lenovo \
-          "WAYLAND_DISPLAY=wayland-1 DISPLAY=:0 sudo -u mike ${pkgs.libnotify}/bin/notify-send \
+          "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus sudo -u mike ${pkgs.libnotify}/bin/notify-send \
             --app-name='Llama Borg Backup' \
             --icon='$icon' \
             'Borg Backup Alert' \
