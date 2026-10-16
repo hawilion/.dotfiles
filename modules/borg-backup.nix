@@ -1,5 +1,28 @@
 { config, pkgs, lib, ... }:
 
+let
+  # Shell helper function to send desktop alerts back to lenovo
+  notifyLenovo = ''
+    send_alert() {
+      local status="$1"
+      local msg="$2"
+      local icon="dialog-information"
+      
+      if [ "$status" = "error" ]; then
+        icon="dialog-error"
+      fi
+
+      if ping -c 1 -W 2 lenovo &>/devnull; then
+        ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=accept-new -i /etc/ssh/ssh_host_ed25519_key root@lenovo \
+          "WAYLAND_DISPLAY=wayland-1 DISPLAY=:0 sudo -u mike ${pkgs.libnotify}/bin/notify-send \
+            --app-name='Llama Borg Backup' \
+            --icon='$icon' \
+            'Borg Backup Alert' \
+            '$msg'" &>/devnull || true
+      fi
+    }
+  '';
+in
 {
   # ---------------------------------------------------------------------------
   # 1. Local Borg Backup Service & Timer (/var/lib/borg-local)
@@ -9,15 +32,17 @@
     after = [ "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
 
-    path = with pkgs; [ borgbackup coreutils ];
+    path = with pkgs; [ borgbackup coreutils openssh iputils libnotify ];
 
     script = ''
       set -euo pipefail
+      ${notifyLenovo}
+
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
       export BORG_REPO="/var/lib/borg-local"
 
       echo "Starting local llama state backup..."
-      borg create \
+      if borg create \
         --stats \
         --compression zstd \
         --exclude '/home/mike/.ollama/models/blobs' \
@@ -26,16 +51,22 @@
         /home/mike/.ollama \
         /home/mike/Modelfile* \
         /var/lib/open-webui \
-        /etc/ssh/ssh_host_ed25519_key
+        /etc/ssh/ssh_host_ed25519_key; then
 
-      echo "Pruning old local archives..."
-      borg prune \
-        --list \
-        --keep-daily 7 \
-        --keep-weekly 4 \
-        --keep-monthly 6
+        echo "Pruning old local archives..."
+        borg prune \
+          --list \
+          --keep-daily 7 \
+          --keep-weekly 4 \
+          --keep-monthly 6
 
-      echo "Local backup succeeded."
+        echo "Local backup succeeded."
+        send_alert "info" "SUCCESS: Local backup completed on llama."
+      else
+        echo "Local backup failed!" >&2
+        send_alert "error" "FAILED: Local backup on llama encountered errors."
+        exit 1
+      fi
     '';
 
     serviceConfig = {
@@ -66,17 +97,20 @@
 
     script = ''
       set -euo pipefail
+      ${notifyLenovo}
+
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
       export BORG_REPO="ssh://root@nixos-server/var/lib/borg-llama"
       export BORG_RSH="ssh -i /etc/ssh/ssh_host_ed25519_key -o IdentitiesOnly=yes -o PreferredAuthentications=publickey"
 
       if ! ping -c 1 -W 5 nixos-server &>/devnull; then
         echo "nixos-server unreachable. Skipping remote backup." >&2
+        send_alert "error" "WARNING: nixos-server unreachable. Remote backup skipped."
         exit 0
       fi
 
       echo "Starting llama state backup to nixos-server..."
-      borg create \
+      if borg create \
         --stats \
         --compression zstd \
         --exclude '/home/mike/.ollama/models/blobs' \
@@ -85,16 +119,22 @@
         /home/mike/.ollama \
         /home/mike/Modelfile* \
         /var/lib/open-webui \
-        /etc/ssh/ssh_host_ed25519_key
+        /etc/ssh/ssh_host_ed25519_key; then
 
-      echo "Pruning old remote archives on nixos-server..."
-      borg prune \
-        --list \
-        --keep-daily 7 \
-        --keep-weekly 4 \
-        --keep-monthly 6
+        echo "Pruning old remote archives on nixos-server..."
+        borg prune \
+          --list \
+          --keep-daily 7 \
+          --keep-weekly 4 \
+          --keep-monthly 6
 
-      echo "Backup to nixos-server succeeded."
+        echo "Backup to nixos-server succeeded."
+        send_alert "info" "SUCCESS: Remote backup to nixos-server completed."
+      else
+        echo "Backup to nixos-server failed!" >&2
+        send_alert "error" "FAILED: Remote backup to nixos-server failed."
+        exit 1
+      fi
     '';
 
     serviceConfig = {
