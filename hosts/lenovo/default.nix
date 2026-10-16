@@ -108,6 +108,7 @@
     syncthing
     go
     libreoffice-qt6-fresh
+    libnotify
   ];
 
   system.stateVersion = "24.11";
