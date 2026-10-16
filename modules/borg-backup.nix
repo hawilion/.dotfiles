@@ -101,7 +101,6 @@ in
       export BORG_REPO="ssh://root@nixos-server/var/lib/borg-llama"
       export BORG_RSH="ssh -i /etc/ssh/ssh_host_ed25519_key -o IdentitiesOnly=yes -o PreferredAuthentications=publickey"
 
-      # Temporarily disable exit-on-error for network reachability check
       set +e
       ping -c 1 -W 5 nixos-server &>/devnull
       PING_STATUS=$?
