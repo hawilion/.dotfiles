@@ -1,25 +1,25 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Shell helper function to send desktop alerts back to lenovo
-  notifyLenovo = ''
+  # Webhook alert helper using curl to ntfy.sh
+  sendAlert = ''
     send_alert() {
       local status="$1"
       local msg="$2"
-      local icon="dialog-information"
-      
+      local title="Llama Borg Backup"
+      local priority="default"
+
       if [ "$status" = "error" ]; then
-        icon="dialog-error"
+        priority="high"
+        title="Borg Backup FAILURE"
       fi
 
-      if ping -c 1 -W 2 lenovo &>/devnull; then
-        ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=accept-new -i /etc/ssh/ssh_host_ed25519_key root@lenovo \
-          "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus sudo -u mike ${pkgs.libnotify}/bin/notify-send \
-            --app-name='Llama Borg Backup' \
-            --icon='$icon' \
-            'Borg Backup Alert' \
-            '$msg'" &>/devnull || true
-      fi
+      ${pkgs.curl}/bin/curl -s \
+        -H "Title: $title" \
+        -H "Priority: $priority" \
+        -H "Tags: backup,llama" \
+        -d "$msg" \
+        https://ntfy.sh/mike-llama-borg-backups-96719 || true
     }
   '';
 in
@@ -32,11 +32,11 @@ in
     after = [ "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
 
-    path = with pkgs; [ borgbackup coreutils openssh iputils libnotify ];
+    path = with pkgs; [ borgbackup coreutils curl ];
 
     script = ''
       set -euo pipefail
-      ${notifyLenovo}
+      ${sendAlert}
 
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
       export BORG_REPO="/var/lib/borg-local"
@@ -93,11 +93,11 @@ in
     after = [ "network.target" "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
 
-    path = with pkgs; [ borgbackup openssh iputils coreutils libnotify ];
+    path = with pkgs; [ borgbackup openssh iputils coreutils curl ];
 
     script = ''
       set -euo pipefail
-      ${notifyLenovo}
+      ${sendAlert}
 
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
       export BORG_REPO="ssh://root@nixos-server/var/lib/borg-llama"

@@ -81,7 +81,7 @@ networking.hosts = {
 
   environment.shellAliases = {
     nrlenovo = "$HOME/.dotfiles/modules/scripts/rebuild-lenovo.sh";
-    nrllama  = "$HOME/.dotfiles/modules/scripts/rebuild-llama.sh";
+    nrllama = "cd $HOME/.dotfiles && git pull && $HOME/.dotfiles/modules/scripts/rebuild-llama.sh";
   };
  
 environment.systemPackages = with pkgs; [
