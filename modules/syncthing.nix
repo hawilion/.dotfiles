@@ -27,6 +27,7 @@
   services.syncthing = {
     enable = true;
     guiAddress = "0.0.0.0:8384";
+    guiPasswordFile = config.sops.secrets."syncthing-gui-password".path;
     group = "users";
     user = "mike";
     openDefaultPorts = true;
@@ -51,7 +52,7 @@
         enabled = true;
         theme = "dark";
         user = "mike";
-        passwordFile = config.sops.secrets."syncthing-gui-password".path;
+    #    passwordFile = config.sops.secrets."syncthing-gui-password".path;
       };
 
       devices = {
