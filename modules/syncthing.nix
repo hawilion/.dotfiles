@@ -35,7 +35,7 @@
     overrideFolders = true;
 
     settings = {
-      # Sets the device name to match system hostname
+      # Automatically resolves to 'lenovo' or 'llama' based on host
       deviceName = config.networking.hostName;
 
       options = {
@@ -78,18 +78,25 @@
             "dynamic"
           ];
         };
+        "llama" = {
+          id = "2PHXPWS-KI7SS3X-DNFDGWX-ZSFEJ6L-P2WHBAP-RCVYYDM-3D5MHCL-UHN23QJ";
+          addresses = [
+            "tcp://100.112.172.66:22000"
+            "dynamic"
+          ];
+        };
       };
 
       folders = {
         "mlog" = {
           id = "ksov6-obsn7";
           path = "/home/mike/mlog";
-          devices = [ "lenovo" "pixel10" ];
+          devices = [ "lenovo" "pixel10" "llama" ];
         };
         "Camera" = {
           id = "nuz3y-otvkt";
           path = "/home/mike/Camera";
-          devices = [ "lenovo" "pixel10" ];
+          devices = [ "lenovo" "pixel10" "llama" ];
           ignorePerms = false;
         };
       };
