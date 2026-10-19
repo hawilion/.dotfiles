@@ -39,12 +39,19 @@
       deviceName = config.networking.hostName;
 
       options = {
+        # Keep local discovery enabled for Tailscale mesh interface
+        localAnnounceEnabled = true;
+        localAnnouncePort = 21027;
+
+        # Disable external public discovery and relays to enforce Tailscale-only syncing
+        globalAnnounceEnabled = false;
+        relaysEnabled = false;
+        natEnabled = false;
+
+        # Performance tuning & telemetry
         databaseTuning = "small";
         maxFolderConcurrency = 1;
         maxConcurrentIncomingRequestKiB = 32768;
-        localAnnounceEnabled = true;
-        localAnnouncePort = 21027;
-        globalAnnounceEnabled = true;
         urAccepted = -1;
       };
 
@@ -71,18 +78,12 @@
             "dynamic"
           ];
         };
-        # If deploying to nixos-server or hp, add their device blocks here:
-        # "nixos-server" = {
-        #   id = "SERVER_DEVICE_ID_HERE";
-        #   addresses = [ "tcp://100.x.y.z:22000" "dynamic" ];
-        # };
       };
 
       folders = {
         "mlog" = {
           id = "ksov6-obsn7";
           path = "/home/mike/mlog";
-          # ONLY list devices explicitly defined in the 'devices' block above
           devices = [ "lenovo" "pixel10" ];
         };
         "Camera" = {
