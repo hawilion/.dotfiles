@@ -26,8 +26,6 @@
   # Syncthing configuration
   services.syncthing = {
     enable = true;
-    guiAddress = "0.0.0.0:8384";
-    guiPasswordFile = config.sops.secrets."syncthing-gui-password".path;
     group = "users";
     user = "mike";
     openDefaultPorts = true;
@@ -37,14 +35,17 @@
     overrideFolders = true;
 
     settings = {
-      databaseTuning = "small";
-      maxFolderConcurrency = 1;
-      maxConcurrentIncomingRequestKiB = 32768;
+      # Sets the device name to match system hostname
+      deviceName = config.networking.hostName;
 
       options = {
+        databaseTuning = "small";
+        maxFolderConcurrency = 1;
+        maxConcurrentIncomingRequestKiB = 32768;
         localAnnounceEnabled = true;
         localAnnouncePort = 21027;
         globalAnnounceEnabled = true;
+        urAccepted = -1;
       };
 
       gui = {
@@ -52,30 +53,36 @@
         enabled = true;
         theme = "dark";
         user = "mike";
-    #    passwordFile = config.sops.secrets."syncthing-gui-password".path;
+        passwordFile = config.sops.secrets."syncthing-gui-password".path;
       };
 
       devices = {
         "lenovo" = {
           id = "T4PRAF6-IPACD6V-MYI5HBR-KYLQB4W-OKAEPW3-BL2JZH2-FRHLNUQ-L5VL2QH";
-          addresses = [ 
+          addresses = [
             "tcp://100.82.102.30:22000"
             "dynamic"
           ];
         };
         "pixel10" = {
           id = "HEBRQRF-QMGQJBZ-SPDHEIU-VIN7DPW-OJFE5KM-JJRQYML-I5JA4GG-5IFXDQM";
-          addresses = [ 
+          addresses = [
             "tcp://100.72.222.102:22000"
             "dynamic"
           ];
         };
+        # If deploying to nixos-server or hp, add their device blocks here:
+        # "nixos-server" = {
+        #   id = "SERVER_DEVICE_ID_HERE";
+        #   addresses = [ "tcp://100.x.y.z:22000" "dynamic" ];
+        # };
       };
 
       folders = {
         "mlog" = {
           id = "ksov6-obsn7";
           path = "/home/mike/mlog";
+          # ONLY list devices explicitly defined in the 'devices' block above
           devices = [ "lenovo" "pixel10" ];
         };
         "Camera" = {
