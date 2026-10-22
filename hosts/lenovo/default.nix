@@ -115,7 +115,7 @@
   services.teamviewer.enable = true;
   services.ebay-watcher = {
     enable = true;
-    maxPrice = 15150; # Keep widened for your test window
+    maxPrice = 1500; # Keep widened for your test window
     minPrice = 800;
   };
   # User Account Configuration

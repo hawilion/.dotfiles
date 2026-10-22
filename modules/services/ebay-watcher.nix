@@ -34,6 +34,11 @@ in
       default = "mike_3090_alerts";
     };
 
+    pollInterval = lib.mkOption {
+       type = lib.types.int;
+      default = 180;
+     };
+
     excludeWords = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ "dell" "hp" "alienware" "omen" "waterblock" "block" ];

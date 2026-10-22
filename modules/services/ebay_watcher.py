@@ -11,6 +11,7 @@ SEARCH_QUERY = os.environ.get("SEARCH_QUERY", "RTX 3090")
 MIN_PRICE = int(os.environ.get("MIN_PRICE", 900))
 MAX_PRICE = int(os.environ.get("MAX_PRICE", 1150))
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "mike_3090_alerts")
+POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", 180)) # Default to 3 minutes
 
 # Define exclude words directly in Python to avoid environment escaping issues
 EXCLUDE_WORDS = ["dell", "hp", "alienware", "omen", "waterblock", "block"]
@@ -125,4 +126,4 @@ if __name__ == "__main__":
     print("[*] eBay Monitor Daemon started.", flush=True)
     while True:
         check_ebay()
-        time.sleep(60)
+        time.sleep(POLL_INTERVAL)
