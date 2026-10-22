@@ -7,6 +7,7 @@ let
   pythonEnv = pkgs.python3.withPackages (ps: with ps; [
     requests
     beautifulsoup4
+    curl-cffi
   ]);
 in
 {
@@ -20,12 +21,12 @@ in
 
     minPrice = lib.mkOption {
       type = lib.types.int;
-      default = 900;
+      default = 800;
     };
 
     maxPrice = lib.mkOption {
       type = lib.types.int;
-      default = 1150;
+      default = 1500; # Temporarily widened for testing
     };
 
     ntfyTopic = lib.mkOption {
@@ -45,22 +46,23 @@ in
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
-      
+
+      environment = {
+        SEARCH_QUERY = cfg.searchQuery;
+        MIN_PRICE = toString cfg.minPrice;
+        MAX_PRICE = toString cfg.maxPrice;
+        NTFY_TOPIC = cfg.ntfyTopic;
+      };
+
       serviceConfig = {
         Type = "simple";
         Restart = "always";
         RestartSec = "15s";
-        Environment = [
-          "SEARCH_QUERY=${cfg.searchQuery}"
-          "MIN_PRICE=${toString cfg.minPrice}"
-          "MAX_PRICE=${toString cfg.maxPrice}"
-          "NTFY_TOPIC=${cfg.ntfyTopic}"
-        ];
       };
 
-      # Use the custom python environment binary directly
+
       script = ''
-        exec ${pythonEnv}/bin/python3 ${./ebay_watcher.py}
+        exec ${pythonEnv}/bin/python3 -u ${./ebay_watcher.py}
       '';
     };
   };

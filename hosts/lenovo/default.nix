@@ -7,7 +7,7 @@
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
     ../../modules/borg-backup-lenovo.nix
-
+    ../../modules/services/ebay-watcher.nix
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
@@ -35,7 +35,37 @@
   systemd.services.syncthing.environment = {
     "STNODEFAULTFOLDER" = "true";
   };
+  # In your hosts/lenovo/default.nix (or a desktop services file)
 
+  systemd.user.services.ntfy-desktop-listener = {
+    description = "Ntfy Desktop Notification Listener";
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "ntfy-listener" ''
+        set +e
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+        export WAYLAND_DISPLAY="wayland-0"
+        
+        while true; do
+          ${pkgs.curl}/bin/curl -sN "https://ntfy.sh/mike_3090_alerts/json" | while read -r line; do
+            [ -z "$line" ] && continue
+            event=$(${pkgs.jq}/bin/jq -r '.event // empty' <<< "$line" 2>/dev/null)
+            if [ "$event" = "message" ]; then
+              title=$(${pkgs.jq}/bin/jq -r '.title // "eBay Alert"' <<< "$line" 2>/dev/null)
+              message=$(${pkgs.jq}/bin/jq -r '.message // "New update"' <<< "$line" 2>/dev/null)
+              ${pkgs.libnotify}/bin/notify-send -u critical -r 999 "$title" "$message"
+            fi
+          done
+          sleep 5
+        done
+      '';
+      Restart = "always";
+      RestartSec = "10s";
+    };
+  };
+  
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -83,7 +113,10 @@
   };
 
   services.teamviewer.enable = true;
-
+  services.ebay-watcher = {
+    enable = true;
+    maxPrice = 1150; # Keep widened for your test window
+  };
   # User Account Configuration
   users.users.mike = {
     isNormalUser = true;
@@ -109,6 +142,7 @@
     go
     libreoffice-qt6-fresh
     libnotify
+    ntfy
   ];
 
   system.stateVersion = "24.11";
