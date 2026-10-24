@@ -46,6 +46,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Expose 'ebay-admin' directly in your system PATH
+    
+   environment.systemPackages = [
+    (pkgs.writeShellApplication {
+      name = "ebay-admin";
+      runtimeInputs = [ pkgs.git pkgs.gnused pkgs.systemd pythonEnv ];
+      text = builtins.readFile ../scripts/ebay-admin.sh;
+    })
+  ];
+
     systemd.services.ebay-watcher = {
       description = "eBay Monitor Daemon";
       after = [ "network-online.target" ];
@@ -57,6 +67,7 @@ in
         MIN_PRICE = toString cfg.minPrice;
         MAX_PRICE = toString cfg.maxPrice;
         NTFY_TOPIC = cfg.ntfyTopic;
+        POLL_INTERVAL = toString cfg.pollInterval;
       };
 
       serviceConfig = {
@@ -65,10 +76,10 @@ in
         RestartSec = "15s";
       };
 
-
       script = ''
         exec ${pythonEnv}/bin/python3 -u ${./ebay_watcher.py}
       '';
     };
   };
+
 }

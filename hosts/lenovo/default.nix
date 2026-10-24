@@ -70,7 +70,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelModules = [ "sg" ];
-
+  boot.extraModprobeConfig = ''
+  options snd-hda-intel model=ideapad
+'';
   # Printing & Network Discovery
   
 
@@ -81,7 +83,8 @@
 
   # Declarative Printer Queue via Static Socket
   # Declarative Printer Queue via Static Socket
-  hardware.printers = {
+ hardware.enableAllFirmware = true; 
+ hardware.printers = {
   ensurePrinters = [
     {
       name = "Brother_MFC_L2710DW";
@@ -147,4 +150,5 @@
   ];
 
   system.stateVersion = "24.11";
+
 }
