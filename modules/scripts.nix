@@ -20,5 +20,6 @@ in
     rebuildLlamaScript
     ollamaCtlScript
     scanScript
+    ntfyListenerScript
   ];
 }
