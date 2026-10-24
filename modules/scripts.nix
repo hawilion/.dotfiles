@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
+  ntfyListenerScript = pkgs.writeShellScriptBin "ntfy-listener" (builtins.readFile ./scripts/ntfy-listener.sh);
   rebuildLenovoScript = pkgs.writeShellScriptBin "rebuild-lenovo" (builtins.readFile ./scripts/rebuild-lenovo.sh);
   rebuildLlamaScript  = pkgs.writeShellScriptBin "rebuild-llama"  (builtins.readFile ./scripts/rebuild-llama.sh);
   borgBackupScript    = pkgs.writeShellScriptBin "borg-run"       (builtins.readFile ./scripts/borg-run.sh);

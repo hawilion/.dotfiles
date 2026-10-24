@@ -8,6 +8,7 @@
     ../../modules/scripts.nix
     ../../modules/borg-backup-lenovo.nix
     ../../modules/services/ebay-watcher.nix
+    ../../modules/services/ntfy-listener.nix
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
