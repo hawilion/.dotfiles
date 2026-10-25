@@ -15,8 +15,7 @@ POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", 180))
 
 # Define exclude words
 EXCLUDE_WORDS = ["dell", "hp", "alienware", "omen", "waterblock", "block"]
-
-CACHE_FILE = os.path.expanduser("~/.cache/ebay_seen.json")
+CACHE_FILE = "/home/mike/.cache/ebay_seen.json"
 
 def load_seen_cache():
     if os.path.exists(CACHE_FILE):
