@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 # Load core configuration from environment variables
 SEARCH_QUERY = os.environ.get("SEARCH_QUERY", "RTX 3090")
 MIN_PRICE = int(os.environ.get("MIN_PRICE", 800))
-MAX_PRICE = int(os.environ.get("MAX_PRICE", 1500))
+MAX_PRICE = int(os.environ.get("MAX_PRICE", 1650))
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "mike_3090_alerts")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", 180)) # Default to 3 minutes
 
