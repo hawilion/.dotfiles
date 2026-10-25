@@ -34,7 +34,8 @@ def save_seen_cache(seen_set):
     except Exception as e:
         print(f"[!] Failed to save cache: {e}", flush=True)
 
-seen_ids = load_seen_cache()is_first_run = len(seen_ids) == 0
+seen_ids = load_seen_cache()
+is_first_run = len(seen_ids) == 0
 if is_first_run and current_run_ids:
             is_first_run = False
             print(f"[*] Initial baseline established with {len(current_run_ids)} items.", flush=True)
