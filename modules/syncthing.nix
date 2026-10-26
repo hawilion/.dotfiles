@@ -35,11 +35,9 @@
     overrideFolders = true;
 
     settings = {
-      # Automatically resolves to 'lenovo' or 'llama' based on host
       deviceName = config.networking.hostName;
 
       options = {
-        # Keep local discovery enabled for Tailscale mesh interface
         localAnnounceEnabled = true;
         localAnnouncePort = 21027;
 
@@ -48,7 +46,6 @@
         relaysEnabled = false;
         natEnabled = false;
 
-        # Performance tuning & telemetry
         databaseTuning = "small";
         maxFolderConcurrency = 1;
         maxConcurrentIncomingRequestKiB = 32768;
@@ -91,12 +88,17 @@
         "mlog" = {
           id = "ksov6-obsn7";
           path = "/home/mike/mlog";
-          devices = [ "lenovo" "pixel10" "llama" ];
+          # Lenovo syncs only with llama; llama will sync with both lenovo and pixel10
+          devices = if config.networking.hostName == "lenovo"
+            then [ "llama" ]
+            else [ "lenovo" "pixel10" ];
         };
         "Camera" = {
           id = "nuz3y-otvkt";
           path = "/home/mike/Camera";
-          devices = [ "lenovo" "pixel10" "llama" ];
+          devices = if config.networking.hostName == "lenovo"
+            then [ "llama" ]
+            else [ "lenovo" "pixel10" ];
           ignorePerms = false;
         };
       };
