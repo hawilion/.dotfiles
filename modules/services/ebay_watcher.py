@@ -36,14 +36,7 @@ def save_seen_cache(seen_set):
 
 seen_ids = load_seen_cache()
 is_first_run = len(seen_ids) == 0
-if is_first_run and current_run_ids:
-            is_first_run = False
-            print(f"[*] Initial baseline established with {len(current_run_ids)} items.", flush=True)
 
-        if current_run_ids:
-            save_seen_cache(seen_ids)
-        else:
-            print(f"[*] Skipping cache write due to 0 items parsed (preserving existing cache).", flush=True)
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
