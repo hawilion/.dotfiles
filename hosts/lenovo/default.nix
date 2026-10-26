@@ -7,7 +7,6 @@
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
     ../../modules/borg-backup-lenovo.nix
-    ../../modules/services/ebay-watcher.nix
     ../../modules/services/ntfy-listener.nix
   ];
     
@@ -117,11 +116,6 @@
   };
 
   services.teamviewer.enable = true;
-  services.ebay-watcher = {
-    enable = true;
-    maxPrice = 1650; # Keep widened for your test window
-    minPrice = 800;
-  };
   # User Account Configuration
   users.users.mike = {
     isNormalUser = true;
