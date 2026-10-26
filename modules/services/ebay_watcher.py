@@ -60,22 +60,10 @@ def check_ebay():
     
     print(f"[*] Checking eBay for '{SEARCH_QUERY}' (${MIN_PRICE}-{MAX_PRICE})...", flush=True)
     
-    # Create a fresh session every check using Chrome impersonation
     session = requests.Session()
     session.headers.update(HEADERS)
     
     try:
-        print("[*] Warming up session on ebay.com...", flush=True)
-        res_warm = session.get("https://www.ebay.com/", impersonate="chrome120", timeout=15)
-        print(f"[*] Warmup HTTP Status: {res_warm.status_code}", flush=True)
-        
-        if res_warm.status_code != 200:
-            print("[!] Warmup failed. Skipping this poll.", flush=True)
-            return
-
-        # Brief pause between warmup and search to mimic human behavior
-        time.sleep(3)
-        
         res = session.get(url, impersonate="chrome120", timeout=15)
         print(f"[*] HTTP Status Code: {res.status_code}", flush=True)
 
