@@ -62,13 +62,21 @@ def check_ebay():
     print(f"[*] Checking eBay for '{SEARCH_QUERY}' (${MIN_PRICE}-{MAX_PRICE})...", flush=True)
     
     try:
+        # Brief pause between warmup and search to mimic human behavior
+        time.sleep(3)
+        
         res = session.get(url, impersonate="safari17_0", timeout=15)
         print(f"[*] HTTP Status Code: {res.status_code}", flush=True)
 
         soup = BeautifulSoup(res.text, 'html.parser')
         title_tag = soup.find('title')
         if title_tag:
-            print(f"[*] Page Title: {title_tag.text.strip()}", flush=True)
+            page_title = title_tag.text.strip()
+            print(f"[*] Page Title: {page_title}", flush=True)
+            
+            if "Pardon Our Interruption" in page_title or "Robot" in page_title:
+                print("[!] Hit eBay bot challenge wall. Backing off...", flush=True)
+                return
         
         # Target new eBay s-card layout
         items = soup.select('li.s-card')
