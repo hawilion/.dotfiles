@@ -70,28 +70,22 @@ def check_ebay():
         if title_tag:
             print(f"[*] Page Title: {title_tag.text.strip()}", flush=True)
         
-        items = soup.select('li.s-item')
+        # Target new eBay s-card layout
+        items = soup.select('li.s-card')
         if not items:
             items = soup.select('.s-item')
-        if not items:
-            item_links = soup.find_all('a', href=lambda h: h and '/itm/' in h)
-            items = []
-            seen_containers = set()
-            for link_el in item_links:
-                container = link_el.find_parent('div') or link_el.find_parent('li')
-                if container and id(container) not in seen_containers:
-                    seen_containers.add(id(container))
-                    items.append(container)
             
         print(f"[*] Found {len(items)} raw items on page.", flush=True)
         
         new_matches = 0
         current_run_ids = set()
 
-        for item in items:
-            title_el = item.select_one('.s-item__title') or item.find(['h3', 'span'], class_=lambda c: c and 'title' in c.lower())
-            link_el = item.find('a', href=lambda h: h and '/itm/' in h)
-            price_el = item.select_one('.s-item__price') or item.find(['span', 'div'], class_=lambda c: c and 'price' in c.lower())
+        for card in items:
+            item_id = card.get('data-listingid')
+            
+            title_el = card.find(['span', 'div', 'a', 'h3'], class_=lambda c: c and 'title' in c.lower())
+            link_el = card.find('a', href=lambda h: h and '/itm/' in h)
+            price_el = card.find(['span', 'div'], class_=lambda c: c and 'price' in c.lower())
             
             if not title_el or not link_el:
                 continue
@@ -100,11 +94,12 @@ def check_ebay():
             link = link_el.get('href', '').split('?')[0]
             price_str = price_el.text.strip() if price_el else "N/A"
             
-            if "Shop on eBay" in title:
+            if "Shop on eBay" in title or not title:
                 continue
                 
-            item_id_match = re.search(r'/itm/(\d+)', link)
-            item_id = item_id_match.group(1) if item_id_match else link
+            if not item_id:
+                item_id_match = re.search(r'/itm/(\d+)', link)
+                item_id = item_id_match.group(1) if item_id_match else link
             
             current_run_ids.add(item_id)
             
