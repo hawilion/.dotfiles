@@ -37,12 +37,21 @@ def save_seen_cache(seen_set):
 seen_ids = load_seen_cache()
 is_first_run = len(seen_ids) == 0
 
+# Chrome 120 headers
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
     "Accept-Encoding": "gzip, deflate, br",
     "Referer": "https://www.ebay.com/",
+    "Sec-Ch-Ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"Windows"',
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
 }
 
 def check_ebay():
@@ -51,13 +60,13 @@ def check_ebay():
     
     print(f"[*] Checking eBay for '{SEARCH_QUERY}' (${MIN_PRICE}-{MAX_PRICE})...", flush=True)
     
-    # Create a fresh session every check to avoid persistent session blocks
+    # Create a fresh session every check using Chrome impersonation
     session = requests.Session()
     session.headers.update(HEADERS)
     
     try:
         print("[*] Warming up session on ebay.com...", flush=True)
-        res_warm = session.get("https://www.ebay.com/", impersonate="safari17_0", timeout=15)
+        res_warm = session.get("https://www.ebay.com/", impersonate="chrome120", timeout=15)
         print(f"[*] Warmup HTTP Status: {res_warm.status_code}", flush=True)
         
         if res_warm.status_code != 200:
@@ -67,7 +76,7 @@ def check_ebay():
         # Brief pause between warmup and search to mimic human behavior
         time.sleep(3)
         
-        res = session.get(url, impersonate="safari17_0", timeout=15)
+        res = session.get(url, impersonate="chrome120", timeout=15)
         print(f"[*] HTTP Status Code: {res.status_code}", flush=True)
 
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -164,7 +173,7 @@ def send_ntfy_alert(title, price, link):
         ]
     }
     try:
-        requests.post("https://ntfy.sh", data=json.dumps(payload), impersonate="safari17_0", timeout=10)
+        requests.post("https://ntfy.sh", data=json.dumps(payload), impersonate="chrome120", timeout=10)
     except Exception as e:
         print(f"[!] Failed to send ntfy notification: {e}", flush=True)
 
