@@ -45,23 +45,25 @@ HEADERS = {
     "Referer": "https://www.ebay.com/",
 }
 
-session = requests.Session()
-session.headers.update(HEADERS)
-
-try:
-    print("[*] Warming up session on ebay.com...", flush=True)
-    res_warm = session.get("https://www.ebay.com/", impersonate="safari17_0", timeout=15)
-    print(f"[*] Warmup HTTP Status: {res_warm.status_code}", flush=True)
-except Exception as e:
-    print(f"[!] Warmup warning: {e}", flush=True)
-
 def check_ebay():
     global is_first_run
     url = f"https://www.ebay.com/sch/i.html?_nkw={SEARCH_QUERY}&_udlo={MIN_PRICE}&_udhi={MAX_PRICE}&_sop=10&LH_BIN=1"
     
     print(f"[*] Checking eBay for '{SEARCH_QUERY}' (${MIN_PRICE}-{MAX_PRICE})...", flush=True)
     
+    # Create a fresh session every check to avoid persistent session blocks
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    
     try:
+        print("[*] Warming up session on ebay.com...", flush=True)
+        res_warm = session.get("https://www.ebay.com/", impersonate="safari17_0", timeout=15)
+        print(f"[*] Warmup HTTP Status: {res_warm.status_code}", flush=True)
+        
+        if res_warm.status_code != 200:
+            print("[!] Warmup failed. Skipping this poll.", flush=True)
+            return
+
         # Brief pause between warmup and search to mimic human behavior
         time.sleep(3)
         
@@ -74,7 +76,7 @@ def check_ebay():
             page_title = title_tag.text.strip()
             print(f"[*] Page Title: {page_title}", flush=True)
             
-            if "Pardon Our Interruption" in page_title or "Robot" in page_title:
+            if "Pardon Our Interruption" in page_title or "Robot" in page_title or "Error Page" in page_title:
                 print("[!] Hit eBay bot challenge wall. Backing off...", flush=True)
                 return
         
