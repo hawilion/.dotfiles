@@ -5,7 +5,7 @@ let
     send_alert() {
       local status="$1"
       local msg="$2"
-      local title="Llama Borg Backup"
+      local title="Lenovo Borg Backup"
       local priority="default"
 
       if [ "$status" = "error" ]; then
@@ -16,9 +16,9 @@ let
       ${pkgs.curl}/bin/curl -s \
         -H "Title: $title" \
         -H "Priority: $priority" \
-        -H "Tags: backup,llama" \
+        -H "Tags: backup,lenovo" \
         -d "$msg" \
-        https://ntfy.sh/mike-llama-borg-backups-96719 || true
+        https://ntfy.sh/mike-lenovo-borg-backups || true
     }
   '';
 in
@@ -26,8 +26,8 @@ in
   # ---------------------------------------------------------------------------
   # 1. Local Borg Backup Service & Timer (/var/lib/borg-local)
   # ---------------------------------------------------------------------------
-  systemd.services.borg-backup-llama-local = {
-    description = "Automated Local Borg Backup for Llama State";
+  systemd.services.borg-backup-lenovo-local = {
+    description = "Automated Local Borg Backup for Lenovo State";
     after = [ "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
 
@@ -39,16 +39,13 @@ in
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
       export BORG_REPO="/var/lib/borg-local"
 
-      echo "Starting local llama state backup..."
+      echo "Starting local lenovo state backup..."
       if borg create \
         --stats \
         --compression zstd \
-        --exclude '/home/mike/.ollama/models/blobs' \
         --exclude '/home/mike/.cache' \
-        ::"llama-local-{now:%Y-%m-%d-%H%M%S}" \
-        /home/mike/.ollama \
-        /home/mike/Modelfile* \
-        /var/lib/open-webui \
+        ::"lenovo-local-{now:%Y-%m-%d-%H%M%S}" \
+        /home/mike \
         /etc/ssh/ssh_host_ed25519_key; then
 
         echo "Pruning old local archives..."
@@ -59,10 +56,10 @@ in
           --keep-monthly 6 || true
 
         echo "Local backup succeeded."
-        send_alert "info" "SUCCESS: Local backup completed on llama."
+        send_alert "info" "SUCCESS: Local backup completed on lenovo."
       else
         echo "Local backup failed!" >&2
-        send_alert "error" "FAILED: Local backup on llama encountered errors."
+        send_alert "error" "FAILED: Local backup on lenovo encountered errors."
         exit 1
       fi
     '';
@@ -73,12 +70,12 @@ in
     };
   };
 
-  systemd.timers.borg-backup-llama-local = {
-    description = "Automated Local Borg Backup for Llama Daily at 2:00 PM";
+  systemd.timers.borg-backup-lenovo-local = {
+    description = "Automated Local Borg Backup for Lenovo Daily at 1:30 PM";
     timerConfig = {
-      OnCalendar = "*-*-* 14:00:00";
+      OnCalendar = "*-*-* 13:30:00";
       Persistent = true;
-      Unit = "borg-backup-llama-local.service";
+      Unit = "borg-backup-lenovo-local.service";
     };
     wantedBy = [ "timers.target" ];
   };
@@ -86,42 +83,39 @@ in
   # ---------------------------------------------------------------------------
   # 2. Remote Borg Backup Service & Timer (nixos-server)
   # ---------------------------------------------------------------------------
-  systemd.services.borg-backup-llama = {
-    description = "Automated Borg Backup for Llama State (Remote)";
+  systemd.services.borg-backup-lenovo = {
+    description = "Automated Borg Backup for Lenovo State (Remote)";
     after = [ "network.target" "sops-nix.service" ];
     wants = [ "sops-nix.service" ];
 
-    path = with pkgs; [ borgbackup openssh iputils coreutils curl ];
+    path = with pkgs; [ borgbackup openssh netcat coreutils curl ];
 
     script = ''
       set -euo pipefail
       ${sendAlert}
 
       export BORG_PASSPHRASE="$(cat /run/secrets/borg_passphrase)"
-      export BORG_REPO="ssh://root@nixos-server/var/lib/borg-llama"
+      export BORG_REPO="ssh://root@nixos-server/var/lib/borg-lenovo"
       export BORG_RSH="ssh -i /etc/ssh/ssh_host_ed25519_key -o IdentitiesOnly=yes -o PreferredAuthentications=publickey"
 
       set +e
-      ping -c 1 -W 5 nixos-server &>/devnull
-      PING_STATUS=$?
+      nc -z -w 5 nixos-server 22
+      CONN_STATUS=$?
       set -e
 
-      if [ $PING_STATUS -ne 0 ]; then
-        echo "nixos-server unreachable. Skipping remote backup." >&2
-        send_alert "error" "WARNING: nixos-server unreachable. Remote backup skipped."
+      if [ $CONN_STATUS -ne 0 ]; then
+        echo "nixos-server unreachable on port 22. Skipping remote backup." >&2
+        send_alert "error" "WARNING: nixos-server SSH unreachable. Remote backup skipped."
         exit 0
       fi
 
-      echo "Starting llama state backup to nixos-server..."
+      echo "Starting lenovo state backup to nixos-server..."
       if borg create \
         --stats \
         --compression zstd \
-        --exclude '/home/mike/.ollama/models/blobs' \
         --exclude '/home/mike/.cache' \
-        ::"llama-{now:%Y-%m-%d-%H%M%S}" \
-        /home/mike/.ollama \
-        /home/mike/Modelfile* \
-        /var/lib/open-webui \
+        ::"lenovo-{now:%Y-%m-%d-%H%M%S}" \
+        /home/mike \
         /etc/ssh/ssh_host_ed25519_key; then
 
         echo "Pruning old remote archives on nixos-server..."
@@ -146,12 +140,12 @@ in
     };
   };
 
-  systemd.timers.borg-backup-llama = {
-    description = "Automated Remote Borg Backup for Llama Daily at 2:30 PM";
+  systemd.timers.borg-backup-lenovo = {
+    description = "Automated Remote Borg Backup for Lenovo Daily at 3:00 PM";
     timerConfig = {
-      OnCalendar = "*-*-* 14:30:00";
+      OnCalendar = "*-*-* 15:00:00";
       Persistent = true;
-      Unit = "borg-backup-llama.service";
+      Unit = "borg-backup-lenovo.service";
     };
     wantedBy = [ "timers.target" ];
   };
