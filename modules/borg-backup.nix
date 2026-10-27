@@ -9,14 +9,14 @@ let
       local priority="default"
 
       if [ "$status" = "error" ]; then
-        priority="high"
+        priority="max"
         title="Borg Backup FAILURE"
       fi
 
       ${pkgs.curl}/bin/curl -s \
         -H "Title: $title" \
         -H "Priority: $priority" \
-        -H "Tags: backup,lenovo" \
+        -H "Tags: warning,backup,lenovo" \
         -d "$msg" \
         https://ntfy.sh/mike-lenovo-borg-backups || true
     }
