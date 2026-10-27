@@ -18,7 +18,8 @@ let
                     URGENCY="normal"
                 fi
                 
-                notify-send -u "$URGENCY" "$TITLE" "$MSG"
+                # -t 0 keeps the notification popup visible until manually dismissed
+                notify-send -t 0 -u "$URGENCY" "$TITLE" "$MSG"
             fi
         fi
     done
