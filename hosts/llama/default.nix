@@ -26,7 +26,6 @@
     ../../modules/syncthing.nix
     ../../modules/scripts.nix
     ../../modules/borg-backup.nix
-    ../../modules/services/ebay-watcher.nix
   ];
     
   nix.settings.trusted-users = [ "root" "mike" ];
@@ -40,12 +39,6 @@
   };
   services.fstrim.enable = true;
   services.tailscale.enable = true;
-  services.ebay-watcher = {
-    enable = true;
-    ntfyTopic = "mike_3090_alerts"; # Match your phone/laptop topic name
-    minPrice = 900;
-    maxPrice = 1150;
-  };
   # Ensure the Tailscale UDP port and trusted interfaces pass through firewall
   networking.firewall = {
     enable = true;
