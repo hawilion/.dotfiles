@@ -43,7 +43,7 @@
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ "tailscale0" ]; #
-    allowedTCPPorts = [ 8384 22000 ];
+    allowedTCPPorts = [ 8080 8384 22000 ];
     allowedUDPPorts = [ 21027 22000 ]; 
  };
   networking.hostName = "llama";
