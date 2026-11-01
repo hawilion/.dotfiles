@@ -28,6 +28,7 @@
     enable = true;
     group = "users";
     user = "mike";
+    guiAddress = "0.0.0.0:8384"; # <-- Add this line
     openDefaultPorts = true;
     configDir = "/home/mike/.config/syncthing";
     dataDir = "/home/mike/.local/state/syncthing";

@@ -75,6 +75,7 @@
   port = 8080;
   openFirewall = true;
   environment = {
+    DEFAULT_USER_ROLE = "admin";
     WEBUI_HOST = "0.0.0.0";
     ENABLE_OLLAMA_API = "True";
     OLLAMA_BASE_URL = "http://127.0.0.1:11434";
