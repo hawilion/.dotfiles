@@ -115,7 +115,7 @@
     openFirewall = true;
   };
 
-  services.teamviewer.enable = true;
+  services.teamviewer.enable = false;
   # User Account Configuration
   users.users.mike = {
     isNormalUser = true;

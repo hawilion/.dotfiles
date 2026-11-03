@@ -27,7 +27,7 @@
     ../../modules/scripts.nix
     ../../modules/borg-backup.nix
   ];
-    
+     
   nix.settings.trusted-users = [ "root" "mike" ];
 
   # --- 1. NVMe & Nix Store Optimization ---
@@ -42,10 +42,10 @@
   # Ensure the Tailscale UDP port and trusted interfaces pass through firewall
   networking.firewall = {
     enable = true;
-    trustedInterfaces = [ "tailscale0" ]; #
+    trustedInterfaces = [ "tailscale0" ];
     allowedTCPPorts = [ 8080 8384 22000 ];
-    allowedUDPPorts = [ 21027 22000 ]; 
- };
+    allowedUDPPorts = [ 21027 22000 ];  
+  };
   networking.hostName = "llama";
   networking.networkmanager.enable = true;
   networking.hosts = {
@@ -61,50 +61,60 @@
     host = "0.0.0.0";
     port = 11434;
     openFirewall = true;
-    modelsDir = "/var/lib/ollama/models"; # Standard path on your nvme0n1 root disk
+    modelsDir = "/var/lib/ollama/models";
     environmentVariables = {
       OLLAMA_ORIGINS = "*";
-      OLLAMA_KEEP_ALIVE = "10m"; # Drop model from VRAM/RAM after 10m idle
+      OLLAMA_KEEP_ALIVE = "10m";
     };
   };
 
   # --- 3. Open WebUI Knowledge Base Interface ---
   services.open-webui = {
-  enable = true;
-  host = "0.0.0.0";
-  port = 8080;
-  openFirewall = true;
-  environment = {
-    DEFAULT_USER_ROLE = "admin";
-    WEBUI_HOST = "0.0.0.0";
-    ENABLE_OLLAMA_API = "True";
-    OLLAMA_BASE_URL = "http://127.0.0.1:11434";
-    OLLAMA_BASE_URLS = "http://127.0.0.1:11434";
-    OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
-    DATA_DIR = "/var/lib/open-webui/data";
+    enable = true;
+    host = "0.0.0.0";
+    port = 8080;
+    openFirewall = true;
+    environment = {
+      #DEFAULT_USER_ROLE = "admin";
+      DEFAULT_USER_ROLE = "pending"; # or let it register normally
+      WEBUI_AUTH = "True";
+      ENABLE_SIGNUP = "False"; # <-- Temporarily allow registration
 
-    # RAG & Embedding configuration
-    RAG_EMBEDDING_ENGINE = "ollama";
-    RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
-    RAG_EMBEDDING_MODEL = "nomic-embed-text:latest";
+      # Automatically seed the first admin account on startup via sops
+      WEBUI_ADMIN_EMAIL = "mlillie57@gmail.com";
+      WEBUI_ADMIN_PASSWORD_FILE = config.sops.secrets."open-webui-password".path;
+      WEBUI_ADMIN_NAME = "Mike";
+      
+      WEBUI_HOST = "0.0.0.0";
+      ENABLE_OLLAMA_API = "True";
+      OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+      OLLAMA_BASE_URLS = "http://127.0.0.1:11434";
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434/api";
+      DATA_DIR = "/var/lib/open-webui/data";
 
-    # Text chunking and splitting for Markdown/Logseq notes
-    ENABLE_RAG_HYBRID_SEARCH = "True";
-    ENABLE_RAG_LOCAL_WEB_FETCH = "True";
-    CHUNK_SIZE = "1000";
-    CHUNK_OVERLAP = "100";
-    ENABLE_PERSISTENT_CONFIG = "False";
+      # RAG & Embedding configuration
+      RAG_EMBEDDING_ENGINE = "ollama";
+      RAG_OLLAMA_BASE_URL = "http://127.0.0.1:11434";
+      RAG_EMBEDDING_MODEL = "nomic-embed-text:latest";
+
+      # Text chunking and splitting for Markdown/Logseq notes
+      ENABLE_RAG_HYBRID_SEARCH = "True";
+      ENABLE_RAG_LOCAL_WEB_FETCH = "True";
+      CHUNK_SIZE = "1000";
+      CHUNK_OVERLAP = "100";
+      ENABLE_PERSISTENT_CONFIG = "False";
+    };
   };
-};
 
   # SOPS-Nix secrets for llama server
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-      
+        
     secrets."syncthing-gui-password" = { owner = "mike"; };
     secrets."borg_passphrase" = { owner = "mike"; };
+    secrets."open-webui-password" = {}; # <-- removed owner attribute
   };
 
   # Directory permissions for Open WebUI and Ollama
@@ -138,7 +148,7 @@
     openFirewall = true;
   };
 
-  services.teamviewer.enable = true;
+  services.teamviewer.enable = false;
 
   # Headless NVIDIA driver configuration for Ollama / local inference
   hardware.graphics = {

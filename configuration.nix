@@ -112,7 +112,7 @@
     brscan4.enable = true;
   };
 
-  services.teamviewer.enable = true;
+  services.teamviewer.enable = false;
   services.flatpak.enable = true;
   hardware.bluetooth.enable = true;
 
